@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🎭 Fun Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Creative Playground for Kids!</h1>
+
+        <div class="demo-section">
+            <h2>🖼️ Picture Creator</h2>
+            <p>Describe something and I'll draw it for you!</p>
+            <input type="text" id="imagePrompt" value="A happy rainbow cat with wings">
+            <button onclick="generateImage()">Create Picture! 🎨</button>
+            <div id="imageResult" class="result-box"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎵 Sound Effects Creator</h2>
+            <p>Describe a sound and I'll make it for you!</p>
+            <input type="text" id="soundPrompt" value="A spaceship flying through space">
+            <button onclick="generateSound()">Create Sound! 🔊</button>
+            <div id="soundResult" class="result-box"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

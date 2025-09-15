@@ -1,0 +1,60 @@
+/* Space Info app styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    margin: 0;
+    background: linear-gradient(135deg, #0c0c0c, #1a1a2e);
+    color: white;
+}
+
+.container {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #404040;
+    backdrop-filter: blur(10px);
+}
+
+button {
+    padding: 15px 30px;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 10px;
+    transition: all 0.3s ease;
+    background: #e74c3c;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    background: #c0392b;
+}
+
+.loading {
+    font-size: 20px;
+    margin: 20px 0;
+    color: #b0b0b0;
+}
+
+.astronaut {
+    background: rgba(255,255,255,0.05);
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #ffd700;
+    color: #e0e0e0;
+}
+
+.total {
+    font-size: 24px;
+    color: #ffd700;
+    margin: 20px 0;
+}
+
