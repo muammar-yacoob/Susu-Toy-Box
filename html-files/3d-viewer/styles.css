@@ -4,14 +4,14 @@ body {
     margin: 0;
     padding: 20px;
     min-height: 100vh;
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
+    background: linear-gradient(45deg, #1a1a2e, #16213e, #0f0f23, #1a1a2e, #16213e);
     background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    animation: darkGradientShift 8s ease-in-out infinite;
     color: white;
     text-align: center;
 }
 
-@keyframes gradientShift {
+@keyframes darkGradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
@@ -20,19 +20,17 @@ body {
 .container {
     max-width: 1000px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: #2d2d2d;
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    border: 1px solid #404040;
 }
 
 h1 {
     font-size: 3em;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    animation: bounce 2s ease-in-out infinite;
 }
 
 .controls {

@@ -5,27 +5,26 @@ body {
     padding: 50px;
     margin: 0;
     min-height: 100vh;
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
+    background: linear-gradient(45deg, #1a1a2e, #16213e, #0f0f23, #1a1a2e, #16213e);
     background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-    color: #e0e0e0;
+    animation: darkGradientShift 8s ease-in-out infinite;
+    color: white;
 }
 
-@keyframes gradientShift {
+@keyframes darkGradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: #2d2d2d;
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
     max-width: 600px;
     margin: 0 auto;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #404040;
 }
 
 button {
