@@ -210,7 +210,8 @@ function showUpcomingEvents() {
     html += '<div class="events-container">';
     
     upcomingEvents.forEach(event => {
-        const isBestSeason = event.description.toLowerCase().includes('best season');
+        const isBestSeason = event.description.toLowerCase().includes('best season') || 
+                           event.date.toLowerCase().includes('best season');
         const eventClass = isBestSeason ? 'event-item best-season' : 'event-item';
         
         html += `

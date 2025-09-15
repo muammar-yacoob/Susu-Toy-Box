@@ -9,23 +9,19 @@
         <h1>🎮 3D Model Viewer</h1>
         <p>Interactive 3D model from Sketchfab!</p>
 
-        <div class="controls">
-            <button onclick="getRandomModel()">Get Random Animated Model! 🎲</button>
-        </div>
-
         <div id="modelInfo" class="model-info">
             <h3>🎮 BMO from Adventure Time</h3>
             <p><strong>Model by:</strong> Marc Virgili</p>
             <p><strong>Description:</strong> BMO fan-art, one of my fav characters from Adventure Time series</p>
             <p><strong>Features:</strong> Animated and interactive! 🎬</p>
-            <button onclick="window.open('https://sketchfab.com/3d-models/fddc038ff63544218433d14aa80135f3', '_blank')" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; margin-top: 10px;">
-                Go to Model Page 🔗
-            </button>
+            <div class="button-group">
+                <button onclick="getRandomModel()">Get Random Model! 🎲</button>
+            </div>
         </div>
 
         <div class="model-container">
             <div class="sketchfab-embed-wrapper">
-                <iframe title="BMO animation (Adventure Time)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fddc038ff63544218433d14aa80135f3/embed"></iframe>
+                <iframe title="BMO animation (Adventure Time)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fddc038ff63544218433d14aa80135f3/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1"></iframe>
             </div>
         </div>
 
