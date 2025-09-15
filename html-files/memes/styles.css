@@ -1,4 +1,4 @@
-/* Memes Page Styles */
+/* Simple Meme Generator Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -18,7 +18,7 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 800px;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -41,7 +41,7 @@ h1 {
     60% { transform: translateY(-5px); }
 }
 
-.demo-section {
+.meme-section {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
@@ -50,11 +50,15 @@ h1 {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.demo-section h2 {
+.meme-section h2 {
     font-size: 2em;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #ffd700;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.input-section {
+    margin: 20px 0;
 }
 
 input[type="text"] {
@@ -67,11 +71,17 @@ input[type="text"] {
     background: rgba(255, 255, 255, 0.9);
     color: #333;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: block;
+    margin: 10px auto;
 }
 
 input[type="text"]:focus {
     outline: none;
     box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+}
+
+.button-section {
+    margin: 20px 0;
 }
 
 button {
@@ -99,8 +109,8 @@ button:active {
     transform: translateY(0);
 }
 
-.result-box {
-    margin-top: 20px;
+.meme-display {
+    margin-top: 30px;
     padding: 20px;
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.1);
@@ -119,24 +129,45 @@ button:active {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.meme-container img {
+.meme-image-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px 0;
+}
+
+.meme-image {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: block;
 }
 
-.meme-title {
-    font-size: 18px;
+.meme-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    font-family: Impact, Arial Black, sans-serif;
+    font-size: clamp(16px, 4vw, 32px);
     font-weight: bold;
-    margin: 15px 0 10px 0;
-    color: #333;
+    color: white;
+    text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px;
+    word-wrap: break-word;
+    text-align: center;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+    line-height: 1.1;
 }
 
-.meme-author {
-    font-size: 14px;
-    color: #666;
-    font-style: italic;
+.top-text {
+    top: 10px;
+}
+
+.bottom-text {
+    bottom: 10px;
 }
 
 p {
@@ -162,5 +193,9 @@ p {
 
     h1 {
         font-size: 2.5em;
+    }
+    
+    .meme-text {
+        font-size: clamp(14px, 3.5vw, 24px);
     }
 }

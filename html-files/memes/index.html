@@ -7,15 +7,24 @@
 <body>
     <div class="container">
         <h1>😂 Meme Generator for Kids!</h1>
-        <p>Find funny memes by describing what you want to see!</p>
+        <p>Create your own funny memes with top and bottom text!</p>
 
-        <div class="demo-section">
-            <h2>🎭 Meme Finder</h2>
-            <p>Describe a funny situation and I'll find a meme for you!</p>
-            <input type="text" id="memePrompt" value="cats being silly and funny">
-            <button onclick="findMeme()">Find Meme! 😂</button>
-            <button onclick="getRandomMeme()">Random Meme! 🎲</button>
-            <div id="memeResult" class="result-box"></div>
+        <div class="meme-section">
+            <h2>🎭 Create Your Meme</h2>
+            
+            <div class="input-section">
+                <input type="text" id="topText" placeholder="Top text (like 'WHEN YOU...')" value="WHEN YOU">
+                <input type="text" id="bottomText" placeholder="Bottom text (like 'FINISH HOMEWORK')" value="FINISH HOMEWORK">
+            </div>
+            
+            <div class="button-section">
+                <button onclick="createMeme()">Create Meme! 😂</button>
+                <button onclick="randomMeme()">Random Text! 🎲</button>
+                <button onclick="shuffleMeme()">New Image! 🖼️</button>
+                <button onclick="downloadMeme()">Download! 💾</button>
+            </div>
+            
+            <div id="memeResult" class="meme-display"></div>
         </div>
     </div>
 
