@@ -1,13 +1,52 @@
 // 3D Model Viewer - Simple JavaScript for kids!
 
+// Helper function to trim long descriptions
+function trimDescription(description, maxLength = 100) {
+    if (!description) return 'An amazing 3D model you can explore!';
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength).trim() + '...';
+}
+
 // Get a random 3D model from Sketchfab API
 async function getRandomModel() {
     const randomNumber = Math.random();
     
-    // 30% chance to use "Spark Games" as author
-    const author = randomNumber < 0.3 ? 'Spark Games' : 'Various Artists';
+    if (randomNumber < 0.3) {
+        // 30% chance - fetch Spark Games models
+        return await getSparkGamesModel();
+    } else {
+        // 70% chance - fetch any random model
+        return await getRandomGeneralModel();
+    }
+}
+
+// Fetch a Spark Games model specifically
+async function getSparkGamesModel() {
+    // Use Spark Games profile URL to get their models
+    const response = await fetch('https://api.sketchfab.com/v3/users/spark-games/models?type=models&downloadable=false&archives_flavours=false&sort_by=-publishedAt');
     
-    // Fetch models from Sketchfab API
+    if (response.ok) {
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            const randomIndex = Math.floor(Math.random() * data.results.length);
+            const model = data.results[randomIndex];
+            
+            return {
+                id: model.uid,
+                title: model.name || 'Spark Games Model',
+                author: 'Spark Games',
+                description: trimDescription(model.description),
+                emoji: '🎮'
+            };
+        }
+    }
+    
+    // If Spark Games API fails, try general API with Spark Games filter
+    return await getRandomGeneralModel();
+}
+
+// Fetch a random general model
+async function getRandomGeneralModel() {
     const response = await fetch('https://api.sketchfab.com/v3/models?type=models&downloadable=false&archives_flavours=false&sort_by=-publishedAt');
     
     if (response.ok) {
@@ -19,21 +58,15 @@ async function getRandomModel() {
             return {
                 id: model.uid,
                 title: model.name || 'Cool 3D Model',
-                author: author,
-                description: model.description || 'An amazing 3D model you can explore!',
+                author: 'Various Artists',
+                description: trimDescription(model.description),
                 emoji: '🎮'
             };
         }
     }
     
-    // Fallback if API fails
-    return {
-        id: 'fddc038ff63544218433d14aa80135f3',
-        title: 'BMO from Adventure Time',
-        author: author,
-        description: 'A cool 3D model to explore!',
-        emoji: '🎮'
-    };
+    // If all APIs fail, return null to show error message
+    return null;
 }
 
 // Show model information
@@ -75,5 +108,12 @@ function loadModel(modelData) {
 // Get a random model when button is clicked
 async function loadRandomModel() {
     const randomModel = await getRandomModel();
-    loadModel(randomModel);
+    
+    if (randomModel) {
+        loadModel(randomModel);
+    } else {
+        // Show error message if no model found
+        const infoBox = document.getElementById('modelInfo');
+        infoBox.innerHTML = '<h3>❌ Unable to load model</h3><p>Please check your internet connection and try again!</p><div class="button-group"><button onclick="loadRandomModel()">Try Again 🔄</button></div>';
+    }
 }
