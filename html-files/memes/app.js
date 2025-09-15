@@ -39,33 +39,28 @@ function pickRandom(list) {
 
 // Get a random meme from API
 async function getRandomMemeFromAPI() {
-    try {
-        const response = await fetch('https://api.imgflip.com/get_memes');
-        const data = await response.json();
+    const response = await fetch('https://api.imgflip.com/get_memes');
+    const data = await response.json();
+    
+    if (data.success && data.data.memes) {
+        const memes = data.data.memes;
+        let randomMeme;
         
-        if (data.success && data.data.memes) {
-            const memes = data.data.memes;
-            let randomMeme;
-            
-            // Keep trying until we get a different meme
-            do {
-                randomMeme = pickRandom(memes);
-            } while (randomMeme.url === currentMemeUrl && memes.length > 1);
-            
-            currentMemeUrl = randomMeme.url;
-            
-            // Add to history (keep only last 10)
-            memeHistory.push(randomMeme.url);
-            if (memeHistory.length > 10) {
-                memeHistory.shift();
-            }
-            
-            return randomMeme.url;
-        } else {
-            throw new Error('Failed to get memes from API');
+        // Keep trying until we get a different meme
+        do {
+            randomMeme = pickRandom(memes);
+        } while (randomMeme.url === currentMemeUrl && memes.length > 1);
+        
+        currentMemeUrl = randomMeme.url;
+        
+        // Add to history (keep only last 10)
+        memeHistory.push(randomMeme.url);
+        if (memeHistory.length > 10) {
+            memeHistory.shift();
         }
-    } catch (error) {
-        console.log('API failed, using backup meme');
+        
+        return randomMeme.url;
+    } else {
         // Fallback to a simple meme if API fails
         return "https://i.imgflip.com/30b1gx.jpg";
     }
@@ -153,73 +148,63 @@ async function downloadMeme() {
     // Create filename
     const filename = `${topText.replace(/\s+/g, '_')}_${bottomText.replace(/\s+/g, '_')}_meme.jpg`;
     
-    try {
-        // Show loading message
-        const memeBox = document.getElementById('memeResult');
-        const originalContent = memeBox.innerHTML;
-        memeBox.innerHTML = '<div style="color: #666; font-size: 18px;">💾 Preparing download...</div>';
-        
-        // Create canvas to draw the meme with text
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Wait for image to load
-        await new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                // Set canvas size to image size
-                canvas.width = img.width;
-                canvas.height = img.height;
-                
-                // Draw the image
-                ctx.drawImage(img, 0, 0);
-                
-                // Set text properties
-                ctx.font = `${Math.max(40, img.width / 15)}px Impact, Arial Black, sans-serif`;
-                ctx.fillStyle = 'white';
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = Math.max(3, img.width / 200);
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                // Draw top text
-                const topY = img.height * 0.15;
-                ctx.strokeText(topText.toUpperCase(), img.width / 2, topY);
-                ctx.fillText(topText.toUpperCase(), img.width / 2, topY);
-                
-                // Draw bottom text
-                const bottomY = img.height * 0.85;
-                ctx.strokeText(bottomText.toUpperCase(), img.width / 2, bottomY);
-                ctx.fillText(bottomText.toUpperCase(), img.width / 2, bottomY);
-                
-                resolve();
-            };
-            img.src = memeImage.src;
-        });
-        
-        // Convert canvas to blob and download
-        canvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
+    // Show loading message
+    const memeBox = document.getElementById('memeResult');
+    const originalContent = memeBox.innerHTML;
+    memeBox.innerHTML = '<div style="color: #666; font-size: 18px;">💾 Preparing download...</div>';
+    
+    // Create canvas to draw the meme with text
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Wait for image to load
+    await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            // Set canvas size to image size
+            canvas.width = img.width;
+            canvas.height = img.height;
             
-            // Restore original content
-            memeBox.innerHTML = originalContent;
-            alert(`Meme downloaded as: ${filename} 🎉`);
-        }, 'image/jpeg', 0.9);
-        
-    } catch (error) {
-        console.error('Download failed:', error);
-        alert('Download failed! Please try again. 😅');
+            // Draw the image
+            ctx.drawImage(img, 0, 0);
+            
+            // Set text properties
+            ctx.font = `${Math.max(40, img.width / 15)}px Impact, Arial Black, sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = Math.max(3, img.width / 200);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Draw top text
+            const topY = img.height * 0.15;
+            ctx.strokeText(topText.toUpperCase(), img.width / 2, topY);
+            ctx.fillText(topText.toUpperCase(), img.width / 2, topY);
+            
+            // Draw bottom text
+            const bottomY = img.height * 0.85;
+            ctx.strokeText(bottomText.toUpperCase(), img.width / 2, bottomY);
+            ctx.fillText(bottomText.toUpperCase(), img.width / 2, bottomY);
+            
+            resolve();
+        };
+        img.src = memeImage.src;
+    });
+    
+    // Convert canvas to blob and download
+    canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
         
         // Restore original content
-        const memeBox = document.getElementById('memeResult');
         memeBox.innerHTML = originalContent;
-    }
+        alert(`Meme downloaded as: ${filename} 🎉`);
+    }, 'image/jpeg', 0.9);
 }
 
 // Show welcome message when page loads and set up event listeners

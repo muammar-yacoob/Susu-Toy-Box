@@ -14,40 +14,30 @@ function showError(message) {
 
 // Simple function to get text from the internet
 async function getTextFromInternet(webAddress) {
-    try {
-        // Ask the internet for information
-        const response = await fetch(webAddress);
+    // Ask the internet for information
+    const response = await fetch(webAddress);
 
-        // Check if we got a good response
-        if (!response.ok) {
-            throw new Error('Could not get weather data');
-        }
-
-        // Get the text from the response
-        return await response.text();
-    } catch (error) {
-        console.log('Error getting data:', error);
-        throw error;
+    // Check if we got a good response
+    if (!response.ok) {
+        throw new Error('Could not get weather data');
     }
+
+    // Get the text from the response
+    return await response.text();
 }
 
 // Simple function to get JSON data from the internet
 async function getJSONFromInternet(webAddress) {
-    try {
-        // Ask the internet for information
-        const response = await fetch(webAddress);
+    // Ask the internet for information
+    const response = await fetch(webAddress);
 
-        // Check if we got a good response
-        if (!response.ok) {
-            throw new Error('Could not get location data');
-        }
-
-        // Get the JSON data from the response
-        return await response.json();
-    } catch (error) {
-        console.log('Error getting data:', error);
-        throw error;
+    // Check if we got a good response
+    if (!response.ok) {
+        throw new Error('Could not get location data');
     }
+
+    // Get the JSON data from the response
+    return await response.json();
 }
 
 // Simple function to get weather by city name

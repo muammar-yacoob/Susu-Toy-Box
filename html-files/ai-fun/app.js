@@ -31,8 +31,6 @@ function createSoundFromDescription(description) {
     // Resume audio context if it's suspended (browser requirement)
     if (audioContext.state === 'suspended') audioContext.resume();
 
-    console.log('Creating sound for description:', description);
-    console.log('Audio context state:', audioContext.state);
 
     // Create an oscillator (sound generator) - must be new each time
     const oscillator = audioContext.createOscillator();
@@ -191,7 +189,6 @@ function createSoundFromDescription(description) {
             oscillator.type = 'square';
         }
 
-        console.log('Sound type detected:', soundType);
 
         // Start and stop the sound
         const duration = description.includes('ocean') || description.includes('wind') ? 3 :
@@ -201,7 +198,6 @@ function createSoundFromDescription(description) {
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + duration);
 
-    console.log('Sound started, duration:', duration);
 }
 
 // Pick a random item from a list

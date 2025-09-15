@@ -3,16 +3,11 @@
 // API Helper Class
 class APIHelper {
     static async fetchWithErrorHandling(url, options = {}) {
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return await response.json();
     }
 
     static showError(element, message = 'Could not get data. Check your internet connection! ❌') {
@@ -32,7 +27,7 @@ class SpaceAPI {
 }
 
 
-// Upcoming Space Events Data (Future Only)
+// Upcoming Space Events Data (Mixed - Dynamic Filtering Applied)
 const upcomingEvents = [
     {
         type: "☄️ Lyrids Meteor Shower",
@@ -83,6 +78,16 @@ const upcomingEvents = [
         type: "☄️ Quadrantids Meteor Shower",
         date: "December 28, 2024 - January 12, 2025",
         description: "Peak: January 3-4 - up to 120 meteors per hour!"
+    },
+    {
+        type: "🌙 Total Lunar Eclipse",
+        date: "March 14, 2025",
+        description: "Total Lunar Eclipse - visible from Americas, Europe, Africa, Asia"
+    },
+    {
+        type: "☄️ Orionids Meteor Shower",
+        date: "October 2 - November 7, 2025",
+        description: "Peak: October 21 - up to 20 meteors per hour!"
     }
 ];
 
@@ -177,51 +182,115 @@ async function getSpaceInfo() {
     
     APIHelper.showLoading(resultDiv, 'Getting space information...');
     
-    try {
-        const data = await SpaceAPI.getAstronauts();
-        
-        let html = `<div class="total">People in Space Right Now: ${data.number} 👨‍🚀</div>`;
-        html += '<div style="margin-top: 20px;">';
-        
-        data.people.forEach(person => {
-            html += `
-                <div class="astronaut">
-                    <strong>${person.name}</strong> 🚀
-                    <br>On: ${person.craft} 🛸
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        html += '<p style="margin-top: 20px;">Want to know more about space? Visit NASA\'s website! 🌟</p>';
-        
-        resultDiv.innerHTML = html;
-    } catch (error) {
-        APIHelper.showError(resultDiv);
-    }
+    const data = await SpaceAPI.getAstronauts();
+    
+    let html = `<div class="total">People in Space Right Now: ${data.number} 👨‍🚀</div>`;
+    html += '<div style="margin-top: 20px;">';
+    
+    data.people.forEach(person => {
+        html += `
+            <div class="astronaut">
+                <strong>${person.name}</strong> 🚀
+                <br>On: ${person.craft} 🛸
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    html += '<p style="margin-top: 20px;">Want to know more about space? Visit NASA\'s website! 🌟</p>';
+    
+    resultDiv.innerHTML = html;
 }
 
+
+// Helper function to check if an event is in the future
+function isEventInFuture(eventDate) {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // getMonth() returns 0-11
+    
+    // Extract year from date string (look for 4-digit year)
+    const yearMatch = eventDate.match(/\b(20\d{2})\b/);
+    if (!yearMatch) return true; // If no year found, assume it's future
+    
+    const eventYear = parseInt(yearMatch[1]);
+    
+    // If event year is greater than current year, it's definitely future
+    if (eventYear > currentYear) return true;
+    
+    // If event year is less than current year, it's definitely past
+    if (eventYear < currentYear) return false;
+    
+    // If event year is current year, check if it's a range that includes future months
+    if (eventYear === currentYear) {
+        // Check for month ranges in the date string
+        const monthRanges = [
+            { name: 'January', num: 1 }, { name: 'February', num: 2 }, { name: 'March', num: 3 },
+            { name: 'April', num: 4 }, { name: 'May', num: 5 }, { name: 'June', num: 6 },
+            { name: 'July', num: 7 }, { name: 'August', num: 8 }, { name: 'September', num: 9 },
+            { name: 'October', num: 10 }, { name: 'November', num: 11 }, { name: 'December', num: 12 }
+        ];
+        
+        // Check if any month in the range is current or future
+        for (const month of monthRanges) {
+            if (eventDate.includes(month.name)) {
+                if (month.num >= currentMonth) return true;
+            }
+        }
+        
+        // Check for numeric month patterns (e.g., "April 19 - May 28" or "March - September")
+        const numericMonthMatch = eventDate.match(/(\d{1,2})\s*-\s*(\d{1,2})/);
+        if (numericMonthMatch) {
+            const startMonth = parseInt(numericMonthMatch[1]);
+            const endMonth = parseInt(numericMonthMatch[2]);
+            return endMonth >= currentMonth;
+        }
+        
+        // Check for single month patterns (e.g., "September 7")
+        const singleMonthMatch = eventDate.match(/(\d{1,2})\s+\d{1,2}/);
+        if (singleMonthMatch) {
+            const month = parseInt(singleMonthMatch[1]);
+            return month >= currentMonth;
+        }
+    }
+    
+    return false;
+}
 
 // Show upcoming space events
 function showUpcomingEvents() {
     const resultDiv = document.getElementById('spaceResult');
     
+    // Debug: Show current date
+    const today = new Date();
+    const currentDate = today.toLocaleDateString();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    // Filter events to only show future ones
+    const futureEvents = upcomingEvents.filter(event => isEventInFuture(event.date));
+    
     let html = '<div class="section-title">☄️ Space Events Calendar! ☄️</div>';
+    html += `<div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: ${currentDate} (Year: ${currentYear}, Month: ${currentMonth})</div>`;
     html += '<div class="events-container">';
     
-    upcomingEvents.forEach(event => {
-        const isBestSeason = event.description.toLowerCase().includes('best season') || 
-                           event.date.toLowerCase().includes('best season');
-        const eventClass = isBestSeason ? 'event-item best-season' : 'event-item';
-        
-        html += `
-            <div class="${eventClass}">
-                <div class="event-type">${event.type}</div>
-                <div class="event-date">📅 ${event.date}</div>
-                <div class="event-description">${event.description}</div>
-            </div>
-        `;
-    });
+    if (futureEvents.length === 0) {
+        html += '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
+    } else {
+        futureEvents.forEach(event => {
+            const isBestSeason = event.description.toLowerCase().includes('best season') || 
+                               event.date.toLowerCase().includes('best season');
+            const eventClass = isBestSeason ? 'event-item best-season' : 'event-item';
+            
+            html += `
+                <div class="${eventClass}">
+                    <div class="event-type">${event.type}</div>
+                    <div class="event-date">📅 ${event.date}</div>
+                    <div class="event-description">${event.description}</div>
+                </div>
+            `;
+        });
+    }
     
     html += '</div>';
     html += '<p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>';

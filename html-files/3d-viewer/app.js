@@ -1,7 +1,7 @@
 // 3D Model Viewer - Simple JavaScript for kids!
 
-// Animated models from Sketchfab (verified working models)
-const sketchfabAnimatedModels = [
+// All our cool 3D models
+const allModels = [
     { id: 'fddc038ff63544218433d14aa80135f3', title: 'BMO from Adventure Time', author: 'Marc Virgili', description: 'BMO fan-art, one of my fav characters from Adventure Time series', emoji: '🎮' },
     { id: 'da15c2fb91fc4034a0658b89b8ebff17', title: 'Easter Egg - Animated', author: 'Spark Games', description: 'Cute animated Easter egg with fun movements', emoji: '🥚' },
     { id: '1590b14b34214d29b245d87609a4b299', title: 'Low-poly Chick - Rigged & Animated', author: 'Spark Games', description: 'Adorable animated chick with low-poly style', emoji: '🐤' },
@@ -13,11 +13,7 @@ const sketchfabAnimatedModels = [
     { id: '8c8c1d7b1b3c4e7f9a2b3c4d5e6f7a8b', title: 'Classic Red Sports Car', author: 'AutoDesign Studio', description: 'Beautiful classic red sports car with detailed interior', emoji: '🚗' },
     { id: '9d9d2e8c2c4d5f8a0b1c2d3e4f5a6b7c', title: 'Flying Drone', author: 'TechModels', description: 'High-tech quadcopter drone with rotating propellers', emoji: '🚁' },
     { id: '0e0e3f9d3d5e6f9a1b2c3d4e5f6a7b8c', title: 'Space Rocket', author: 'SpaceCorp', description: 'Realistic space rocket ready for launch', emoji: '🚀' },
-    { id: '1f1f4a0e4e6f7a2b3c4d5e6f7a8b9c0d', title: 'Steam Locomotive', author: 'TrainMaster', description: 'Classic steam train with working wheels and smoke', emoji: '🚂' }
-];
-
-// Spark Games models (not necessarily animated)
-const sparkGamesModels = [
+    { id: '1f1f4a0e4e6f7a2b3c4d5e6f7a8b9c0d', title: 'Steam Locomotive', author: 'TrainMaster', description: 'Classic steam train with working wheels and smoke', emoji: '🚂' },
     { id: '2a2a5b1f5f7a8b3c4d5e6f7a8b9c0d1e', title: 'Medieval Castle', author: 'Spark Games', description: 'Majestic medieval castle with towers and walls', emoji: '🏰' },
     { id: '3b3b6c2a6a8b9c4d5e6f7a8b9c0d1e2f', title: 'Modern Skyscraper', author: 'Spark Games', description: 'Glass and steel skyscraper with LED lighting', emoji: '🏢' },
     { id: '4c4c7d3b7b9c0d5e6f7a8b9c0d1e2f3a', title: 'Japanese Pagoda', author: 'Spark Games', description: 'Traditional Japanese temple with curved roofs', emoji: '🏯' },
@@ -40,53 +36,24 @@ const sparkGamesModels = [
     { id: '1b1b4c0a4a6b7c2d3e4f5a6b7c8d9e0f', title: 'Garden Gnome', author: 'Spark Games', description: 'Cheerful gnome with red hat and fishing rod', emoji: '🧙' }
 ];
 
-// Keep track of current model to avoid repeats
-let currentModelId = 'fddc038ff63544218433d14aa80135f3'; // BMO default
-
-// Pick a random model with 50/50 chance between Sketchfab animated and Spark Games models
-const pickRandomModel = () => {
-    try {
-        // 50% chance for Sketchfab animated models, 50% for Spark Games models
-        const useSketchfab = Math.random() < 0.5;
-        
-        let availableModels;
-        if (useSketchfab) {
-            availableModels = sketchfabAnimatedModels.filter(model => model.id !== currentModelId);
-            // If no Sketchfab models available, fall back to Spark Games
-            if (availableModels.length === 0) {
-                availableModels = sparkGamesModels.filter(model => model.id !== currentModelId);
-            }
-        } else {
-            availableModels = sparkGamesModels.filter(model => model.id !== currentModelId);
-            // If no Spark Games models available, fall back to Sketchfab
-            if (availableModels.length === 0) {
-                availableModels = sketchfabAnimatedModels.filter(model => model.id !== currentModelId);
-            }
-        }
-        
-        // Final fallback - if still no models, use any model except current
-        if (availableModels.length === 0) {
-            const allModels = [...sketchfabAnimatedModels, ...sparkGamesModels];
-            availableModels = allModels.filter(model => model.id !== currentModelId);
-        }
-        
-        // Ultimate fallback - if still no models, reset and use any model
-        if (availableModels.length === 0) {
-            availableModels = [...sketchfabAnimatedModels, ...sparkGamesModels];
-        }
-        
-        const randomIndex = Math.floor(Math.random() * availableModels.length);
-        return availableModels[randomIndex];
-        
-    } catch (error) {
-        console.error('Error picking random model:', error);
-        // Fallback to BMO if everything fails
-        return sketchfabAnimatedModels[0];
+// Pick a random model - 30% chance for Spark Games models
+function pickRandomModel() {
+    const randomNumber = Math.random();
+    
+    if (randomNumber < 0.3) {
+        // 30% chance - pick a Spark Games model
+        const sparkModels = allModels.filter(model => model.author === 'Spark Games');
+        const randomIndex = Math.floor(Math.random() * sparkModels.length);
+        return sparkModels[randomIndex];
+    } else {
+        // 70% chance - pick any model
+        const randomIndex = Math.floor(Math.random() * allModels.length);
+        return allModels[randomIndex];
     }
-};
+}
 
-// Update the info box with model details
-const updateModelInfo = (modelData) => {
+// Show model information
+function showModelInfo(modelData) {
     document.getElementById('modelInfo').innerHTML = `
         <h3>${modelData.emoji} ${modelData.title}</h3>
         <p><strong>Model by:</strong> ${modelData.author}</p>
@@ -99,57 +66,30 @@ const updateModelInfo = (modelData) => {
             </button>
         </div>
     `;
-};
+}
 
-// Create the embed HTML for a model (without attribution links)
-const createEmbedHTML = (modelData) => `
-    <iframe title="${modelData.title}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${modelData.id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1"></iframe>
-`;
-
-// Load a new 3D model with error handling
+// Load a new 3D model
 function loadModel(modelData) {
-    try {
-        const container = document.querySelector('.sketchfab-embed-wrapper');
-        const infoBox = document.getElementById('modelInfo');
+    const container = document.querySelector('.sketchfab-embed-wrapper');
+    const infoBox = document.getElementById('modelInfo');
 
-        if (!container || !infoBox) {
-            console.error('Required DOM elements not found');
-            return;
-        }
+    // Show loading message
+    infoBox.innerHTML = '<h3>Loading new model... ⏳</h3><p>Please wait while we load your new 3D model!</p>';
 
-        // Show loading message
-        infoBox.innerHTML = '<h3>Loading new model... ⏳</h3><p>Please wait while we load your new 3D model!</p>';
+    // Create the iframe for the 3D model
+    const iframeHTML = `<iframe title="${modelData.title}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${modelData.id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1"></iframe>`;
+    
+    // Update the container with new model
+    container.innerHTML = iframeHTML;
 
-        // Update the container with new embed
-        container.innerHTML = createEmbedHTML(modelData);
-
-        // Wait a moment, then update the model info
-        setTimeout(() => {
-            try {
-                updateModelInfo(modelData);
-            } catch (error) {
-                console.error('Error updating model info:', error);
-                infoBox.innerHTML = '<h3>Model loaded! 🎮</h3><p>Enjoy exploring your new 3D model!</p>';
-            }
-        }, 1000);
-        
-    } catch (error) {
-        console.error('Error loading model:', error);
-        const infoBox = document.getElementById('modelInfo');
-        if (infoBox) {
-            infoBox.innerHTML = '<h3>Error loading model 😞</h3><p>Please try clicking "Get Random Model" again!</p><div class="button-group"><button onclick="getRandomModel()">Try Again! 🎲</button></div>';
-        }
-    }
+    // Wait a moment, then show model info
+    setTimeout(() => {
+        showModelInfo(modelData);
+    }, 1000);
 }
 
 // Get a random model when button is clicked
 function getRandomModel() {
     const randomModel = pickRandomModel();
-    currentModelId = randomModel.id; // Update current model ID
     loadModel(randomModel);
-    console.log('Loading random animated model:', randomModel.title);
 }
-
-// Show welcome message when page loads
-const showWelcomeMessage = () => console.log('3D Model Viewer loaded! BMO is ready to play! 🎮');
-window.onload = showWelcomeMessage;
