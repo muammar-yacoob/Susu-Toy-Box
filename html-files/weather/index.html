@@ -2,16 +2,35 @@
 <html>
 <head>
     <title>Weather Wizard 🌤️</title>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
 </head>
 <body>
-    <div class="container">
-        <h1>🌤️ Weather Wizard</h1>
-        <input type="text" id="cityInput" placeholder="Enter city name (or leave blank for your location)">
-        <br>
-        <button onclick="getWeather()">Get Weather! 🌦️</button>
-        <div id="weatherAnimation" class="weather-animation"></div>
-        <div id="weatherResult" class="weather"></div>
+    <div class="hero min-h-screen bg-blue-900">
+        <div class="card w-96 bg-white shadow-xl">
+            <div class="card-body text-center">
+
+                <h1 class="text-2xl font-bold">
+                    <img src="https://img.icons8.com/fluency/32/sun.png"/>
+                    Weather Wizard
+                </h1>
+
+                <input
+                    id="city"
+                    type="text"
+                    placeholder="Enter city name"
+                    class="input input-bordered"
+                    onkeypress="if(event.key==='Enter') getWeather()"
+                />
+
+                <button onclick="getWeather()" class="btn btn-blue">
+                    Get Weather! ⚡
+                </button>
+
+                <div id="result"></div>
+
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
