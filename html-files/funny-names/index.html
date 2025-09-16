@@ -1,7 +1,46 @@
 <!DOCTYPE html>
 <html data-theme="dark">
 <head>
-    <title>Funny Name Generator 🔥</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funny Name Generator - Create Hilarious Names Instantly 🔥</title>
+    <meta name="description" content="Generate funny names instantly! Create hilarious character names, pet names, and creative nicknames with our fun name generator. Perfect for games, stories, and entertainment.">
+    <meta name="keywords" content="funny names, name generator, character names, pet names, creative names, hilarious names, random names, name ideas">
+    <meta name="author" content="Susu Apps">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yoursite.com/html-files/funny-names/">
+    <meta property="og:title" content="Funny Name Generator - Create Hilarious Names Instantly">
+    <meta property="og:description" content="Generate funny names instantly! Create hilarious character names, pet names, and creative nicknames with our fun name generator.">
+    <meta property="og:image" content="https://yoursite.com/html-files/funny-names/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://yoursite.com/html-files/funny-names/">
+    <meta property="twitter:title" content="Funny Name Generator - Create Hilarious Names Instantly">
+    <meta property="twitter:description" content="Generate funny names instantly! Create hilarious character names, pet names, and creative nicknames with our fun name generator.">
+    <meta property="twitter:image" content="https://yoursite.com/html-files/funny-names/og-image.jpg">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Funny Name Generator",
+        "description": "Generate funny names instantly for characters, pets, and entertainment",
+        "url": "https://yoursite.com/html-files/funny-names/",
+        "applicationCategory": "Entertainment",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+    
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
@@ -11,7 +50,10 @@
             <div class="card w-full max-w-md bg-base-100 shadow-2xl">
                 <div class="card-body text-center space-y-3">
                     <h1 class="text-xl font-bold">Funny Name Generator</h1>
-                    <button onclick="mainFunction()" class="btn btn-primary btn-sm">Generate Names!</button>
+                    <div class="flex gap-2 justify-center">
+                        <button onclick="mainFunction()" class="btn btn-primary btn-sm">Generate Names!</button>
+                        <button onclick="shareApp()" class="btn btn-secondary btn-sm">📤 Share</button>
+                    </div>
                     <div id="result"></div>
                 </div>
             </div>

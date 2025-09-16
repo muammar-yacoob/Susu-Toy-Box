@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Susu Apps - Share Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        .share-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .share-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .whatsapp { background: #25D366; }
+        .instagram { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
+        .facebook { background: #1877F2; }
+        .twitter { background: #1DA1F2; }
+        .telegram { background: #0088CC; }
+        .linkedin { background: #0077B5; }
+        .pinterest { background: #E60023; }
+        .reddit { background: #FF4500; }
+        .tiktok { background: #000000; }
+        .snapchat { background: #FFFC00; color: #000; }
+    </style>
+</head>
+<body onload="particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="card w-full max-w-4xl bg-base-100 shadow-2xl border border-base-300">
+                <div class="card-body text-center space-y-6">
+                    <h1 class="text-3xl font-bold">🚀 Share Susu Apps</h1>
+                    <p class="text-lg">Share our amazing apps with your friends and family!</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <!-- WhatsApp -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToWhatsApp()">
+                            <div class="social-icon whatsapp mx-auto mb-3">
+                                <span>📱</span>
+                            </div>
+                            <h3 class="font-bold text-sm">WhatsApp</h3>
+                            <p class="text-xs text-gray-400">Share instantly</p>
+                        </div>
+                        
+                        <!-- Instagram -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToInstagram()">
+                            <div class="social-icon instagram mx-auto mb-3">
+                                <span>📸</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Instagram</h3>
+                            <p class="text-xs text-gray-400">Stories & Posts</p>
+                        </div>
+                        
+                        <!-- Facebook -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToFacebook()">
+                            <div class="social-icon facebook mx-auto mb-3">
+                                <span>👥</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Facebook</h3>
+                            <p class="text-xs text-gray-400">Post & Share</p>
+                        </div>
+                        
+                        <!-- Twitter -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToTwitter()">
+                            <div class="social-icon twitter mx-auto mb-3">
+                                <span>🐦</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Twitter</h3>
+                            <p class="text-xs text-gray-400">Tweet about it</p>
+                        </div>
+                        
+                        <!-- Telegram -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToTelegram()">
+                            <div class="social-icon telegram mx-auto mb-3">
+                                <span>✈️</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Telegram</h3>
+                            <p class="text-xs text-gray-400">Send to groups</p>
+                        </div>
+                        
+                        <!-- LinkedIn -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToLinkedIn()">
+                            <div class="social-icon linkedin mx-auto mb-3">
+                                <span>💼</span>
+                            </div>
+                            <h3 class="font-bold text-sm">LinkedIn</h3>
+                            <p class="text-xs text-gray-400">Professional</p>
+                        </div>
+                        
+                        <!-- Pinterest -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToPinterest()">
+                            <div class="social-icon pinterest mx-auto mb-3">
+                                <span>📌</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Pinterest</h3>
+                            <p class="text-xs text-gray-400">Pin & Save</p>
+                        </div>
+                        
+                        <!-- Reddit -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToReddit()">
+                            <div class="social-icon reddit mx-auto mb-3">
+                                <span>🤖</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Reddit</h3>
+                            <p class="text-xs text-gray-400">Community</p>
+                        </div>
+                        
+                        <!-- TikTok -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToTikTok()">
+                            <div class="social-icon tiktok mx-auto mb-3">
+                                <span>🎵</span>
+                            </div>
+                            <h3 class="font-bold text-sm">TikTok</h3>
+                            <p class="text-xs text-gray-400">Viral content</p>
+                        </div>
+                        
+                        <!-- Snapchat -->
+                        <div class="share-card bg-base-200 p-4 rounded-lg" onclick="shareToSnapchat()">
+                            <div class="social-icon snapchat mx-auto mb-3">
+                                <span>👻</span>
+                            </div>
+                            <h3 class="font-bold text-sm">Snapchat</h3>
+                            <p class="text-xs text-gray-400">Quick share</p>
+                        </div>
+                    </div>
+                    
+                    <div class="divider">OR</div>
+                    
+                    <div class="flex flex-col items-center space-y-3">
+                        <button onclick="copyToClipboard()" class="btn btn-primary btn-sm">
+                            📋 Copy Link
+                        </button>
+                        <button onclick="shareViaEmail()" class="btn btn-secondary btn-sm">
+                            📧 Email Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'https://yoursite.com';
+        const shareText = 'Check out these amazing interactive web apps! 🚀';
+        const hashtags = '#WebApps #Interactive #Fun #Tech #SusuApps';
+        
+        function shareToWhatsApp() {
+            const url = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + baseUrl)}`;
+            window.open(url, '_blank');
+        }
+        
+        function shareToInstagram() {
+            // Instagram doesn't support direct URL sharing, so we'll copy to clipboard
+            const text = `${shareText}\n\n${baseUrl}\n\n${hashtags}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied! Paste it in your Instagram story or post 📸');
+            });
+        }
+        
+        function shareToFacebook() {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(baseUrl)}`;
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToTwitter() {
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(baseUrl)}&hashtags=${encodeURIComponent(hashtags)}`;
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToTelegram() {
+            const url = `https://t.me/share/url?url=${encodeURIComponent(baseUrl)}&text=${encodeURIComponent(shareText)}`;
+            window.open(url, '_blank');
+        }
+        
+        function shareToLinkedIn() {
+            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(baseUrl)}`;
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToPinterest() {
+            const url = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(baseUrl)}&description=${encodeURIComponent(shareText)}`;
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToReddit() {
+            const url = `https://reddit.com/submit?url=${encodeURIComponent(baseUrl)}&title=${encodeURIComponent(shareText)}`;
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+        
+        function shareToTikTok() {
+            // TikTok doesn't support direct URL sharing, so we'll copy to clipboard
+            const text = `${shareText}\n\n${baseUrl}\n\n${hashtags}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied! Paste it in your TikTok video description 🎵');
+            });
+        }
+        
+        function shareToSnapchat() {
+            // Snapchat doesn't support direct URL sharing, so we'll copy to clipboard
+            const text = `${shareText}\n\n${baseUrl}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied! Paste it in your Snapchat story 👻');
+            });
+        }
+        
+        function copyToClipboard() {
+            const text = `${shareText}\n\n${baseUrl}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Link copied to clipboard! 📋');
+            });
+        }
+        
+        function shareViaEmail() {
+            const subject = 'Check out these amazing web apps!';
+            const body = `${shareText}\n\n${baseUrl}\n\n${hashtags}`;
+            const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = url;
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-center toast-top';
+            toast.innerHTML = `
+                <div class="alert alert-success">
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
