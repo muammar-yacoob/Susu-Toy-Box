@@ -12,15 +12,8 @@ body {
 }
 
 @keyframes backgroundShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .container {
@@ -66,31 +59,106 @@ button:hover {
     color: #b0b0b0;
 }
 
-.astronaut {
+/* Astronaut styles */
+.astronauts-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.astronaut-compact {
     background: rgba(255,255,255,0.05);
-    margin: 10px 0;
-    padding: 15px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid #ffd700;
     color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.2s ease;
 }
 
-.total {
-    font-size: clamp(20px, 4vw, 24px);
+.astronaut-compact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255,215,0,0.2);
+}
+
+.astronaut-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    padding: 4px;
+    animation: fadeIn 1s ease-in forwards;
+}
+
+.astronaut-compact:hover .astronaut-icon {
+    animation: rotateSlow 28s linear infinite;
+}
+
+.astronaut-compact:not(:hover) .astronaut-icon {
+    animation: zoomOutAndFade 3s ease-out forwards, fadeIn 1s ease-in 3s forwards;
+}
+
+.astronaut-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.astronaut-name {
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 14px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.astronaut-craft {
+    font-size: 12px;
+    color: #b0b0b0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Animations */
+@keyframes rotateSlow {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes zoomOutAndFade {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.1); opacity: 0.5; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Common text styles */
+.total, .section-title {
+    font-size: clamp(18px, 3.5vw, 24px);
     color: #ffd700;
     margin: 20px 0;
     font-weight: bold;
 }
 
 .section-title {
-    font-size: clamp(18px, 3.5vw, 22px);
-    color: #ffd700;
-    margin: 20px 0;
-    font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-
+/* Event styles */
 .events-container {
     display: grid;
     gap: 15px;
@@ -116,7 +184,6 @@ button:hover {
     border: 2px solid #ffd700;
     box-shadow: 0 8px 20px rgba(255,215,0,0.4), 0 0 20px rgba(255,215,0,0.2);
     transform: scale(1.02);
-    position: relative;
     z-index: 10;
 }
 
@@ -142,18 +209,6 @@ button:hover {
     overflow: visible;
 }
 
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
 .event-type {
     font-size: clamp(16px, 3vw, 18px);
     color: #ffd700;
@@ -173,6 +228,7 @@ button:hover {
     line-height: 1.5;
 }
 
+/* Planet styles */
 .planets-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -269,26 +325,14 @@ button:hover {
 
 /* Responsive design */
 @media (max-width: 768px) {
-    body {
-        padding: 20px;
-    }
-    
-    .container {
-        padding: 20px;
-    }
-    
-    .button-section {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    button {
-        width: 100%;
-        max-width: 300px;
-    }
-    
-    .planets-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
+    body { padding: 20px; }
+    .container { padding: 20px; }
+    .button-section { flex-direction: column; align-items: center; }
+    button { width: 100%; max-width: 300px; }
+    .planets-container { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .astronauts-compact { grid-template-columns: 1fr; gap: 8px; }
+    .astronaut-compact { padding: 10px; }
+    .astronaut-icon { width: 35px; height: 35px; }
+    .astronaut-name { font-size: 13px; }
+    .astronaut-craft { font-size: 11px; }
 }
-
