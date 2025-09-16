@@ -1,35 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
-    <title>🎮 3D Model Viewer</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>3D Model Viewer 🔥</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>🎮 3D Model Viewer</h1>
-        <p>Interactive 3D model from Sketchfab!</p>
-
-        <div id="modelInfo" class="model-info">
-            <h3>🎮 BMO from Adventure Time</h3>
-            <p><strong>Model by:</strong> Marc Virgili</p>
-            <p><strong>Description:</strong> BMO fan-art, one of my fav characters from Adventure Time series</p>
-            <p><strong>Features:</strong> Animated and interactive! 🎬</p>
-            <div class="button-group">
-                <button onclick="loadRandomModel()">Get Random Model! 🎲</button>
+<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="card w-96 bg-base-100 shadow-2xl">
+                <div class="card-body text-center space-y-4">
+                    <h1 class="text-2xl font-bold">3D Model Viewer</h1>
+                    <button onclick="mainFunction()" class="btn btn-primary">Get Random 3D Model!</button>
+                    <div id="result"></div>
+                </div>
             </div>
-        </div>
-
-        <div class="model-container">
-            <div class="sketchfab-embed-wrapper">
-                <iframe title="BMO animation (Adventure Time)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fddc038ff63544218433d14aa80135f3/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1"></iframe>
-            </div>
-        </div>
-
-        <div class="info">
-            <p>🖱️ Click and drag to rotate • 🔄 Scroll to zoom • 📱 Touch controls on mobile</p>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

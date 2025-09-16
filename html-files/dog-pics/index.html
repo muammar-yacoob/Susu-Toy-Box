@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
     <title>Dog Picture Generator 🐶</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>🐶 Dog Picture Generator</h1>
-        <button onclick="getDog()">Get Random Dog! 🐾</button>
-        <div id="dogResult"></div>
+<body onload="initializeDogData(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="card w-96 bg-base-100 shadow-2xl">
+                <div class="card-body text-center space-y-4">
+                    <h1 class="text-2xl font-bold">Doggy Pics</h1>
+                    <button onclick="const data = GetData('next'); if(data) { document.querySelector('#result img').src = data.imageUrl; document.querySelector('#result img').alt = data.breedName; document.querySelector('#result .breed-name').textContent = data.breedName; }" class="btn btn-primary">Who's a Good Dog?</button>
+                    <div id="result">
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="relative">
+                                <img src="" alt="" class="max-w-80 max-h-80 w-auto h-auto rounded-lg shadow-lg"/>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="breed-name text-black text-sm font-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

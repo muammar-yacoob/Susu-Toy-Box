@@ -1,217 +1,56 @@
-// Simple Meme Generator for Kids!
+const topTexts = ["WHEN YOU", "ME WHEN", "HOW I FEEL", "WHEN MOM SAYS", "ME TRYING TO"];
+const bottomTexts = ["FINISH HOMEWORK", "GET ICE CREAM", "PLAY GAMES", "EAT PIZZA", "GO TO BED"];
+let currentMeme = "";
 
-// Keep track of current meme to avoid duplicates
-let currentMemeUrl = "";
-let memeHistory = []; // Keep track of recent memes
-
-// Fun top text examples
-const topTexts = [
-    "WHEN YOU",
-    "ME WHEN",
-    "HOW I FEEL",
-    "WHEN MOM SAYS",
-    "ME TRYING TO",
-    "WHEN THE TEACHER",
-    "HOW I LOOK",
-    "WHEN DAD",
-    "ME AFTER",
-    "WHEN YOU REALIZE"
-];
-
-// Fun bottom text examples
-const bottomTexts = [
-    "FINISH HOMEWORK",
-    "GET ICE CREAM",
-    "PLAY VIDEO GAMES",
-    "EAT PIZZA",
-    "GO TO BED",
-    "CLEAN YOUR ROOM",
-    "DO CHORES",
-    "EAT VEGETABLES",
-    "SHARE TOYS",
-    "BE QUIET"
-];
-
-// Pick random item from a list
-function pickRandom(list) {
-    return list[Math.floor(Math.random() * list.length)];
+async function initApp() {
+    const result = document.getElementById('result');
+    result.innerHTML = '';
 }
 
-// Get a random meme from API
-async function getRandomMemeFromAPI() {
+async function loadRandomImage() {
+    const result = document.getElementById('result');
+    const button = document.querySelector('button');
+
+    button.innerHTML = '<span class="loading loading-spinner"></span>';
+    button.disabled = true;
+
     const response = await fetch('https://api.imgflip.com/get_memes');
     const data = await response.json();
-    
-    if (data.success && data.data.memes) {
-        const memes = data.data.memes;
-        let randomMeme;
-        
-        // Keep trying until we get a different meme
-        do {
-            randomMeme = pickRandom(memes);
-        } while (randomMeme.url === currentMemeUrl && memes.length > 1);
-        
-        currentMemeUrl = randomMeme.url;
-        
-        // Add to history (keep only last 10)
-        memeHistory.push(randomMeme.url);
-        if (memeHistory.length > 10) {
-            memeHistory.shift();
-        }
-        
-        return randomMeme.url;
-    } else {
-        // Fallback to a simple meme if API fails
-        return "https://i.imgflip.com/30b1gx.jpg";
-    }
+    const meme = data.data.memes[Math.floor(Math.random() * data.data.memes.length)];
+    currentMeme = meme.url;
+
+    updateMemeDisplay();
+
+    button.innerHTML = 'New Image! 🖼️';
+    button.disabled = false;
 }
 
-// Update text on the current meme image
+function loadRandomText() {
+    const topText = topTexts[Math.floor(Math.random() * topTexts.length)];
+    const bottomText = bottomTexts[Math.floor(Math.random() * bottomTexts.length)];
+
+    document.getElementById('topText').value = topText;
+    document.getElementById('bottomText').value = bottomText;
+
+    if (currentMeme) updateMemeDisplay();
+}
+
 function updateMemeText() {
-    const topText = document.getElementById('topText').value.trim();
-    const bottomText = document.getElementById('bottomText').value.trim();
-    
-    const topTextElement = document.getElementById('topTextElement');
-    const bottomTextElement = document.getElementById('bottomTextElement');
-    
-    if (topTextElement) {
-        topTextElement.textContent = topText.toUpperCase();
-    }
-    if (bottomTextElement) {
-        bottomTextElement.textContent = bottomText.toUpperCase();
-    }
+    if (currentMeme) updateMemeDisplay();
 }
 
-// Load a random image (keeps current text)
-async function loadRandomImage() {
-    const memeBox = document.getElementById('memeResult');
-    
-    // Show loading message
-    memeBox.innerHTML = '<div style="color: #666; font-size: 18px;">🔄 Loading new image...</div>';
-    
-    // Get a new random meme image
-    const randomImage = await getRandomMemeFromAPI();
-    
-    // Get current text
-    const topText = document.getElementById('topText').value.trim() || "WHEN YOU";
-    const bottomText = document.getElementById('bottomText').value.trim() || "FINISH HOMEWORK";
-    
-    // Create the meme with new image
-    memeBox.innerHTML = `
-        <div class="meme-container">
-            <div class="meme-image-container">
-                <img src="${randomImage}" alt="Meme" class="meme-image" id="memeImage">
-                <div class="meme-text top-text" id="topTextElement">${topText.toUpperCase()}</div>
-                <div class="meme-text bottom-text" id="bottomTextElement">${bottomText.toUpperCase()}</div>
+function updateMemeDisplay() {
+    const topText = document.getElementById('topText').value.toUpperCase();
+    const bottomText = document.getElementById('bottomText').value.toUpperCase();
+    const result = document.getElementById('result');
+
+    result.innerHTML = `
+        <div class="bg-gray-700 p-4 rounded-lg text-white">
+            <div style="position: relative; display: inline-block; max-width: 350px; margin: 0 auto;">
+                <img src="${currentMeme}" alt="Meme" style="width: 100%; height: auto; max-height: 250px; object-fit: contain; border-radius: 8px;">
+                <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold; font-size: 20px; text-shadow: 2px 2px 4px black; text-align: center; width: 90%; line-height: 1.1;">${topText}</div>
+                <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold; font-size: 20px; text-shadow: 2px 2px 4px black; text-align: center; width: 90%; line-height: 1.1;">${bottomText}</div>
             </div>
-            <p style="color: #666; margin-top: 15px;">New image loaded! Change text above to update the meme! 🎉</p>
         </div>
     `;
 }
-
-// Load random text (keeps current image)
-function loadRandomText() {
-    const topText = pickRandom(topTexts);
-    const bottomText = pickRandom(bottomTexts);
-    
-    // Update input fields
-    document.getElementById('topText').value = topText;
-    document.getElementById('bottomText').value = bottomText;
-    
-    // Update text on meme if it exists
-    updateMemeText();
-    
-    // If no meme exists yet, create one
-    const memeBox = document.getElementById('memeResult');
-    if (!document.getElementById('memeImage')) {
-        loadRandomImage();
-    }
-}
-
-// Download the meme
-async function downloadMeme() {
-    const topText = document.getElementById('topText').value.trim();
-    const bottomText = document.getElementById('bottomText').value.trim();
-    
-    if (!topText || !bottomText) {
-        alert('Please create a meme first! 😂');
-        return;
-    }
-    
-    // Get the meme image
-    const memeImage = document.getElementById('memeImage');
-    if (!memeImage) {
-        alert('Please create a meme first! 😂');
-        return;
-    }
-    
-    // Create filename
-    const filename = `${topText.replace(/\s+/g, '_')}_${bottomText.replace(/\s+/g, '_')}_meme.jpg`;
-    
-    // Show loading message
-    const memeBox = document.getElementById('memeResult');
-    const originalContent = memeBox.innerHTML;
-    memeBox.innerHTML = '<div style="color: #666; font-size: 18px;">💾 Preparing download...</div>';
-    
-    // Create canvas to draw the meme with text
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Wait for image to load
-    await new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-            // Set canvas size to image size
-            canvas.width = img.width;
-            canvas.height = img.height;
-            
-            // Draw the image
-            ctx.drawImage(img, 0, 0);
-            
-            // Set text properties
-            ctx.font = `${Math.max(40, img.width / 15)}px Impact, Arial Black, sans-serif`;
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = Math.max(3, img.width / 200);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            // Draw top text
-            const topY = img.height * 0.15;
-            ctx.strokeText(topText.toUpperCase(), img.width / 2, topY);
-            ctx.fillText(topText.toUpperCase(), img.width / 2, topY);
-            
-            // Draw bottom text
-            const bottomY = img.height * 0.85;
-            ctx.strokeText(bottomText.toUpperCase(), img.width / 2, bottomY);
-            ctx.fillText(bottomText.toUpperCase(), img.width / 2, bottomY);
-            
-            resolve();
-        };
-        img.src = memeImage.src;
-    });
-    
-    // Convert canvas to blob and download
-    canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-        
-        // Restore original content
-        memeBox.innerHTML = originalContent;
-        alert(`Meme downloaded as: ${filename} 🎉`);
-    }, 'image/jpeg', 0.9);
-}
-
-// Show welcome message when page loads and set up event listeners
-window.onload = function() {
-    document.getElementById('memeResult').innerHTML = '<div style="color: #666; font-size: 16px; padding: 15px;">😂 Welcome! Write your funny text above and click "New Image!" to start! 🎭</div>';
-    
-    // Add event listeners to update text immediately when typing
-    document.getElementById('topText').addEventListener('input', updateMemeText);
-    document.getElementById('bottomText').addEventListener('input', updateMemeText);
-};
