@@ -5,13 +5,18 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="initApp(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="hero min-h-screen bg-neutral">
         <div class="hero-content">
-            <div class="card w-96 bg-base-100 shadow-2xl">
+            <div class="card w-full max-w-2xl bg-base-100 shadow-2xl">
                 <div class="card-body text-center space-y-4">
-                    <h1 class="text-2xl font-bold">Meme Generator</h1>
-                    <button onclick="mainFunction()" class="btn btn-primary">Generate Random Meme!</button>
+                    <h1 class="text-2xl font-bold">😂 Meme Generator</h1>
+                    <input id="topText" type="text" placeholder="Top text (WHEN YOU...)" class="input input-bordered w-full" value="WHEN YOU" onkeyup="updateMemeText()"/>
+                    <input id="bottomText" type="text" placeholder="Bottom text (FINISH HOMEWORK)" class="input input-bordered w-full" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                    <div class="flex gap-2">
+                        <button onclick="loadRandomImage()" class="btn btn-primary flex-1">New Image! 🖼️</button>
+                        <button onclick="loadRandomText()" class="btn btn-secondary flex-1">Random Text! 🎲</button>
+                    </div>
                     <div id="result"></div>
                 </div>
             </div>
