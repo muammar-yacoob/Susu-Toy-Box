@@ -5,18 +5,19 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="initApp(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="hero min-h-screen bg-neutral">
         <div class="hero-content">
-            <div class="card w-96 bg-base-100 shadow-2xl">
-                <div class="card-body text-center space-y-4">
-                    <h1 class="text-2xl font-bold">Funny Name Generator</h1>
-                    <button onclick="mainFunction()" class="btn btn-primary">Generate Funny Name!</button>
+            <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+                <div class="card-body text-center space-y-3">
+                    <h1 class="text-xl font-bold">Funny Name Generator</h1>
+                    <button onclick="mainFunction()" class="btn btn-primary btn-sm">Generate Names!</button>
                     <div id="result"></div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="toastContainer" class="toast toast-center toast-top"></div>
     <script src="app.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ let currentMeme = "";
 
 async function initApp() {
     const result = document.getElementById('result');
-    result.innerHTML = '<div class="bg-gray-700 p-4 rounded-lg text-white">😂 Write your text above and click "New Image!" to start!</div>';
+    result.innerHTML = '';
 }
 
 async function loadRandomImage() {

@@ -1,5 +1,5 @@
 const astronautsTemplate = `<div class="total">People in Space Right Now: {number} 👨‍🚀</div><div class="astronauts-compact">{astronauts}</div><p style="margin-top: 20px;">Want to know more about space? Visit NASA's website! 🌟</p>`;
-const astronautItemTemplate = `<div class="astronaut-compact"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;" onmouseenter="this.style.animation='spin 1s linear infinite'" onmouseleave="this.style.animation='none'"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div></div>`;
+const astronautItemTemplate = `<div class="astronaut-compact"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;" onmouseenter="this.style.animation='spin 1s linear infinite'" onmouseleave="this.style.animation='none'"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>`;
 const eventsTemplate = `<div class="section-title">☄️ Space Events Calendar! ☄️</div><div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div><div class="events-container">{events}</div><p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>`;
 const eventItemTemplate = `<div class="{eventClass}" onclick="window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text={type}&dates={googleDate}/{googleDate}&details={description}', '_blank')" style="cursor: pointer;"><div class="event-type">{type}</div><div class="event-date">📅 {date}</div><div class="event-description">{description}</div></div>`;
 const planetsTemplate = `<div class="section-title">🪐 Our Solar System (8 Planets + Pluto)! 🪐</div><div class="planets-container">{planets}</div><p style="margin-top: 20px; color: #ffd700; font-size: 14px;">Planet animations by <a href="https://graysea.tumblr.com/post/158035770070/the-solar-system-bonus-pluto" target="_blank" style="color: #3498db;">graysea</a> 🌟</p>`;
@@ -22,12 +22,63 @@ function formatGoogleDate(date) {
     return `${year}${month}${day}`;
 }
 
+function getCountryFlag(astronaut) {
+    const name = astronaut.name.toLowerCase();
+    const craft = astronaut.craft.toLowerCase();
+    
+    // Common astronaut countries and their flag codes
+    const countryFlags = {
+        'usa': 'https://img.icons8.com/color/32/usa.png',
+        'united states': 'https://img.icons8.com/color/32/usa.png',
+        'russia': 'https://img.icons8.com/color/32/russian-federation.png',
+        'russian': 'https://img.icons8.com/color/32/russian-federation.png',
+        'china': 'https://img.icons8.com/color/32/china.png',
+        'chinese': 'https://img.icons8.com/color/32/china.png',
+        'japan': 'https://img.icons8.com/color/32/japan.png',
+        'japanese': 'https://img.icons8.com/color/32/japan.png',
+        'europe': 'https://img.icons8.com/color/32/european-union.png',
+        'european': 'https://img.icons8.com/color/32/european-union.png',
+        'italy': 'https://img.icons8.com/color/32/italy.png',
+        'italian': 'https://img.icons8.com/color/32/italy.png',
+        'germany': 'https://img.icons8.com/color/32/germany.png',
+        'german': 'https://img.icons8.com/color/32/germany.png',
+        'france': 'https://img.icons8.com/color/32/france.png',
+        'french': 'https://img.icons8/color/32/france.png',
+        'canada': 'https://img.icons8.com/color/32/canada.png',
+        'canadian': 'https://img.icons8.com/color/32/canada.png',
+        'uk': 'https://img.icons8.com/color/32/great-britain.png',
+        'britain': 'https://img.icons8.com/color/32/great-britain.png',
+        'british': 'https://img.icons8.com/color/32/great-britain.png'
+    };
+    
+    // Check craft first (ISS, Tiangong, etc.)
+    if (craft.includes('iss') || craft.includes('international space station')) {
+        return countryFlags['usa']; // Default to USA for ISS
+    }
+    if (craft.includes('tiangong') || craft.includes('shenzhou')) {
+        return countryFlags['china'];
+    }
+    
+    // Check names for common patterns
+    for (const [country, flag] of Object.entries(countryFlags)) {
+        if (name.includes(country) || craft.includes(country)) {
+            return flag;
+        }
+    }
+    
+    // Default flag (Earth/International)
+    return 'https://img.icons8.com/color/32/earth-planet.png';
+}
+
 async function getSpaceInfo() {
     const result = document.getElementById('spaceResult');
     result.innerHTML = '<div class="loading loading-spinner"></div>';
     const response = await fetch('http://api.open-notify.org/astros.json');
     const data = await response.json();
-    const astronautsHtml = data.people.map(p => astronautItemTemplate.replace('{name}', p.name).replace('{craft}', p.craft)).join('');
+    const astronautsHtml = data.people.map(p => {
+        const flag = getCountryFlag(p);
+        return astronautItemTemplate.replace('{name}', p.name).replace('{craft}', p.craft).replace('{flag}', flag);
+    }).join('');
     result.innerHTML = astronautsTemplate.replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
 }
 
@@ -85,4 +136,6 @@ function showUpcomingEvents() {
     result.innerHTML = eventsTemplate.replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
 }
 
-window.onload = function() { getSpaceInfo(); };
+function initApp() {
+    getSpaceInfo();
+}

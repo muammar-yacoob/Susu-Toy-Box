@@ -10,9 +10,6 @@ async function getCat() {
 
     result.innerHTML = `
         <img src="${data[0].url}" alt="Random Cat" width="250" class="rounded-lg mx-auto"/>
-        <div class="bg-gray-700 p-4 rounded-lg text-white mt-4">
-            <p>Here's your adorable cat! 🐱</p>
-        </div>
     `;
 
     button.innerHTML = 'Get Random Cat!';

@@ -10,9 +10,6 @@ async function getDog() {
 
     result.innerHTML = `
         <img src="${data.message}" alt="Random Dog" width="250" class="rounded-lg mx-auto"/>
-        <div class="bg-gray-700 p-4 rounded-lg text-white mt-4">
-            <p>Here's your good boy! 🐶</p>
-        </div>
     `;
 
     button.innerHTML = 'Get Random Dog!';

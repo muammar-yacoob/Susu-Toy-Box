@@ -1,16 +1,5 @@
 /* Space Info app styles */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 50px;
-    margin: 0;
-    background: #1a1a2e;
-    color: white;
-    min-height: 100vh;
-}
-
-
-.container {
+#background .container {
     background: #2d2d2d;
     border-radius: 20px;
     padding: 30px;
@@ -18,6 +7,8 @@ body {
     max-width: 800px;
     margin: 0 auto;
     border: 1px solid #404040;
+    color: white;
+    text-align: center;
 }
 
 .button-section {
@@ -71,6 +62,7 @@ button:hover {
     align-items: center;
     gap: 12px;
     transition: transform 0.2s ease;
+    position: relative;
 }
 
 .astronaut-compact:hover {
@@ -111,6 +103,21 @@ button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.astronaut-flag {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+}
+
+.astronaut-flag:hover {
+    transform: scale(1.1);
 }
 
 /* Simple animations */
@@ -243,8 +250,9 @@ button:hover {
     max-width: 150px;
     height: auto;
     border-radius: 10px;
-    margin: 10px 0;
+    margin: 10px auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: block;
 }
 
 .planet-circle {

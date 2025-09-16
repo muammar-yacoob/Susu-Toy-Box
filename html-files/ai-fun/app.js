@@ -18,10 +18,9 @@ async function mainFunction() {
 
     result.innerHTML = `
         <div class="bg-gray-700 p-4 rounded-lg text-white">
-            <h3 class="font-bold mb-2">Here's a fun joke! 😄</h3>
             <p>${randomJoke}</p>
-            </div>
-        `;
+        </div>
+    `;
 
     button.innerHTML = 'Generate Fun Content!';
     button.disabled = false;

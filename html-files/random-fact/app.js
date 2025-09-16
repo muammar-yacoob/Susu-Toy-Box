@@ -10,7 +10,6 @@ async function mainFunction() {
 
     result.innerHTML = `
         <div class="bg-gray-700 p-4 rounded-lg text-white">
-            <h3 class="font-bold mb-2">Did you know? 🤔</h3>
             <p>${data.text}</p>
         </div>
     `;
