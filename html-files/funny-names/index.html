@@ -1,41 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
-    <title>😄 Funny Name Generator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Funny Name Generator 🔥</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>😄 Funny Name Generator</h1>
-        <p>Generate hilarious names for characters, pets, or just for fun!</p>
-
-        <div class="input-section">
-            <label for="nameType">Choose name type:</label>
-            <select id="nameType">
-                <option value="random">Random Funny Name</option>
-                <option value="character">Character Name</option>
-                <option value="pet">Pet Name</option>
-                <option value="dogs">Dog Name</option>
-                <option value="cats">Cat Name</option>
-                <option value="players">Gaming Player Name</option>
-                <option value="superhero">Superhero Name</option>
-                <option value="pirate">Pirate Name</option>
-                <option value="wizard">Wizard Name</option>
-                <option value="robot">Robot Name</option>
-                <option value="dragon">Dragon Name</option>
-                <option value="unicorn">Unicorn Name</option>
-            </select>
-        </div>
-
-        <div class="button-section">
-            <button onclick="generateFunnyNames()">Generate 5 Names! 🎪</button>
-        </div>
-
-        <div id="nameResult" class="name-display">
-            <div style="color: #666; font-size: 16px; padding: 15px;">🎭 Welcome! Choose a name type above and click "Generate Funny Name!" to start! 😄</div>
+<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="card w-96 bg-base-100 shadow-2xl">
+                <div class="card-body text-center space-y-4">
+                    <h1 class="text-2xl font-bold">Funny Name Generator</h1>
+                    <button onclick="mainFunction()" class="btn btn-primary">Generate Funny Name!</button>
+                    <div id="result"></div>
+                </div>
+            </div>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

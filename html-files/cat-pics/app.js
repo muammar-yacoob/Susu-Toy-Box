@@ -1,25 +1,21 @@
-// Cat Pictures - Simple JavaScript for kids!
-
-// Simple function to get a random cat from the internet
 async function getCat() {
-    const resultDiv = document.getElementById('catResult');
+    const result = document.getElementById('result');
+    const button = document.querySelector('button');
 
-    // Show loading message while we get the cat
-    resultDiv.innerHTML = '<div class="loading">Getting a cute cat... 🐱</div>';
+    button.innerHTML = '<span class="loading loading-spinner"></span>';
+    button.disabled = true;
 
-    // Ask the internet for a random cat picture
     const response = await fetch('https://api.thecatapi.com/v1/images/search');
     const data = await response.json();
 
-    // Show the cat picture on our page
-    resultDiv.innerHTML = `
-        <div class="loading">Here is your cat! 🐱</div>
-        <img src="${data[0].url}" alt="Random Cat" class="cat-image">
-        <p>Click the button for another cat! 🐾</p>
+    result.innerHTML = `
+        <img src="${data[0].url}" alt="Random Cat" width="250" class="rounded-lg mx-auto"/>
+        <div class="bg-gray-700 p-4 rounded-lg text-white mt-4">
+            <p>Here's your adorable cat! 🐱</p>
+        </div>
     `;
-}
 
-// Get a cat when page loads
-const showCatOnLoad = () => getCat();
-window.onload = showCatOnLoad;
+    button.innerHTML = 'Get Random Cat!';
+    button.disabled = false;
+}
 

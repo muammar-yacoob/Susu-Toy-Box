@@ -1,32 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
-    <title>😂 Meme Generator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Meme Generator 🔥</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>😂 Meme Generator for Kids!</h1>
-        <p>Create your own funny memes with top and bottom text!</p>
-
-        <div class="meme-section">
-            <h2>🎭 Create Your Meme</h2>
-            
-            <div class="input-section">
-                <input type="text" id="topText" placeholder="Top text (like 'WHEN YOU...')" value="WHEN YOU">
-                <input type="text" id="bottomText" placeholder="Bottom text (like 'FINISH HOMEWORK')" value="FINISH HOMEWORK">
+<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="card w-96 bg-base-100 shadow-2xl">
+                <div class="card-body text-center space-y-4">
+                    <h1 class="text-2xl font-bold">Meme Generator</h1>
+                    <button onclick="mainFunction()" class="btn btn-primary">Generate Random Meme!</button>
+                    <div id="result"></div>
+                </div>
             </div>
-            
-            <div class="button-section">
-                <button onclick="loadRandomImage()">New Image! 🖼️</button>
-                <button onclick="loadRandomText()">Random Text! 🎲</button>
-                <button onclick="downloadMeme()">Download! 💾</button>
-            </div>
-            
-            <div id="memeResult" class="meme-display"></div>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

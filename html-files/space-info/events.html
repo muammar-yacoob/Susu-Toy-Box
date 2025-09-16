@@ -1,0 +1,18 @@
+<div class="section-title">☄️ Space Events Calendar! ☄️</div>
+<div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div>
+<div class="events-container">{events}</div>
+<p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>
+
+<template id="event-template" style="display: none;">
+    <div class="{eventClass}">
+        <div class="event-type">{type}</div>
+        <div class="event-date">📅 {date}</div>
+        <div class="event-description">{description}</div>
+    </div>
+</template>
+
+<template id="no-events-template" style="display: none;">
+    <div class="event-item">
+        <div class="event-description">No space events scheduled right now. Check back later! 🌟</div>
+    </div>
+</template>

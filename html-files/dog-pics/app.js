@@ -1,24 +1,20 @@
-// Dog Pictures - Simple JavaScript for kids!
-
-// Simple function to get a random dog from the internet
 async function getDog() {
-    const resultDiv = document.getElementById('dogResult');
+    const result = document.getElementById('result');
+    const button = document.querySelector('button');
 
-    // Show loading message while we get the dog
-    resultDiv.innerHTML = '<div class="loading">Getting a cute dog... 🐶</div>';
+    button.innerHTML = '<span class="loading loading-spinner"></span>';
+    button.disabled = true;
 
-    // Ask the internet for a random dog picture
     const response = await fetch('https://dog.ceo/api/breeds/image/random');
     const data = await response.json();
 
-    // Show the dog picture on our page
-    resultDiv.innerHTML = `
-        <div class="loading">Here is your dog! 🐶</div>
-        <img src="${data.message}" alt="Random Dog" class="dog-image">
-        <p>Click the button for another dog! 🐾</p>
+    result.innerHTML = `
+        <img src="${data.message}" alt="Random Dog" width="250" class="rounded-lg mx-auto"/>
+        <div class="bg-gray-700 p-4 rounded-lg text-white mt-4">
+            <p>Here's your good boy! 🐶</p>
+        </div>
     `;
-}
 
-// Get a dog when page loads
-const showDogOnLoad = () => getDog();
-window.onload = showDogOnLoad;
+    button.innerHTML = 'Get Random Dog!';
+    button.disabled = false;
+}

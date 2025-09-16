@@ -18,6 +18,7 @@ async function getRandomModel() {
         // 70% chance - fetch any random model
         return await getRandomGeneralModel();
     }
+    
 }
 
 // Fetch a Spark Games model specifically
@@ -33,7 +34,7 @@ async function getSparkGamesModel() {
             
             return {
                 id: model.uid,
-                title: model.name || 'Spark Games Model',
+                title: model.name || 'Cool 3D Model',
                 author: 'Spark Games',
                 description: trimDescription(model.description),
                 emoji: '🎮'
@@ -58,7 +59,7 @@ async function getRandomGeneralModel() {
             return {
                 id: model.uid,
                 title: model.name || 'Cool 3D Model',
-                author: 'Various Artists',
+                author: model.user?.displayName || 'Unknown Artist',
                 description: trimDescription(model.description),
                 emoji: '🎮'
             };

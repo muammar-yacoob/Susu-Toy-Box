@@ -1,56 +1,20 @@
-// Random Fact app JavaScript with embedded API utilities
+async function mainFunction() {
+    const result = document.getElementById('result');
+    const button = document.querySelector('button');
 
-// API Helper Class
-class APIHelper {
-    static async fetchWithErrorHandling(url, options = {}) {
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
-    }
+    button.innerHTML = '<span class="loading loading-spinner"></span>';
+    button.disabled = true;
 
-    static showError(element, message = 'Could not get data. Check your internet connection! ❌') {
-        element.innerHTML = `<div class="loading">${message}</div>`;
-    }
+    const response = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
+    const data = await response.json();
 
-    static showLoading(element, message = 'Loading...') {
-        element.innerHTML = `<div class="loading">${message}</div>`;
-    }
+    result.innerHTML = `
+        <div class="bg-gray-700 p-4 rounded-lg text-white">
+            <h3 class="font-bold mb-2">Did you know? 🤔</h3>
+            <p>${data.text}</p>
+        </div>
+    `;
+
+    button.innerHTML = 'Get Random Fact!';
+    button.disabled = false;
 }
-
-// Facts API functions
-class FactsAPI {
-    static async getRandomFact() {
-        return await APIHelper.fetchWithErrorHandling('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
-    }
-}
-
-// Random Fact app functionality
-async function getFact() {
-    const resultDiv = document.getElementById('factResult');
-    
-    APIHelper.showLoading(resultDiv, 'Getting a random fact...');
-    
-    try {
-        const data = await FactsAPI.getRandomFact();
-        
-        resultDiv.innerHTML = `
-            <div class="title">Did you know? 🤔</div>
-            <div class="fact">${data.text}</div>
-        `;
-    } catch (error) {
-        APIHelper.showError(resultDiv);
-    }
-}
-
-// Get a fact when page loads
-window.onload = function() {
-    getFact();
-};
-
