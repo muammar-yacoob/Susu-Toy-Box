@@ -71,7 +71,7 @@ button:hover {
     margin: 10px 0;
     padding: 15px;
     border-radius: 10px;
-    border-left: 5px solid #ffd700;
+    border: 1px solid #ffd700;
     color: #e0e0e0;
 }
 
@@ -195,6 +195,10 @@ button:hover {
     box-shadow: 0 8px 16px rgba(0,0,0,0.3);
 }
 
+.planet-item.pluto {
+    border: 2px solid #666666;
+}
+
 .planet-name {
     font-size: clamp(16px, 3vw, 18px);
     color: #ffd700;
@@ -247,7 +251,7 @@ button:hover {
     padding: 10px;
     background: rgba(255,255,255,0.03);
     border-radius: 8px;
-    border-left: 3px solid #3498db;
+    border: 1px solid #3498db;
 }
 
 .comparison-item {
