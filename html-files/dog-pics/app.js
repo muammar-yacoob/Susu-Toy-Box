@@ -1,17 +1,25 @@
-async function getDog() {
-    const result = document.getElementById('result');
-    const button = document.querySelector('button');
+let dogImages = [];
+let currentIndex = 0;
 
-    button.innerHTML = '<span class="loading loading-spinner"></span>';
-    button.disabled = true;
+async function initializeDogData() {
+    for (let i = 0; i < 10; i++) {
+        const response = await fetch('https://dog.ceo/api/breeds/image/random');
+        const data = await response.json();
+        const breedName = data.message.split('/')[4].split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
-    const response = await fetch('https://dog.ceo/api/breeds/image/random');
-    const data = await response.json();
+        dogImages.push({
+            imageUrl: data.message,
+            breedName: breedName
+        });
+    }
+}
 
-    result.innerHTML = `
-        <img src="${data.message}" alt="Random Dog" width="250" class="rounded-lg mx-auto"/>
-    `;
+function GetData(action) {
+    if (dogImages.length === 0) return null;
 
-    button.innerHTML = 'Get Random Dog!';
-    button.disabled = false;
+    if (action === 'next') {
+        currentIndex = (currentIndex + 1) % dogImages.length;
+    }
+
+    return dogImages[currentIndex];
 }
