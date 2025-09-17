@@ -6,8 +6,25 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </head>
 <body onload="fillCity(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+    <!-- Header -->
+    <header class="navbar bg-base-300 shadow-lg border-b border-base-content/10 sticky top-0 z-50">
+        <div class="navbar-start">
+            <button onclick="window.location.href='../../index.html'" class="btn btn-ghost text-xl font-bold hover:bg-base-200 transition-all duration-200">
+                🎉 Susu's Playground
+            </button>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <h1 class="text-lg font-semibold">🌤️ Weather Wizard</h1>
+        </div>
+        <div class="navbar-end">
+            <button onclick="window.location.href='../../index.html'" class="btn btn-primary btn-sm hover:scale-105 transition-all duration-200">
+                🏠 Home
+            </button>
+        </div>
+    </header>
+
     <div id="background" class="min-h-screen bg-neutral">
-        <div class="hero h-full">
+        <div class="hero min-h-screen">
             <div class="hero-content">
                 <div class="card w-96 bg-base-100 shadow-2xl">
                     <div class="card-body text-center space-y-4">
@@ -20,6 +37,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-6 bg-base-300 text-base-content border-t border-base-content/10">
+        <div class="flex flex-col items-center space-y-2">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🎮</span>
+                <p class="text-lg font-semibold">Susu's Fun Code Playground</p>
+                <span class="text-2xl">🎮</span>
+            </div>
+            <p class="text-sm opacity-70">© 2025 Susu's Toy Box. All rights reserved.</p>
+            <p class="text-xs opacity-60">Made with 💖 by Susu! Educational fun for everyone! 🌟</p>
+        </div>
+    </footer>
 
     <script src="app.js"></script>
 </body>
