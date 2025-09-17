@@ -4,15 +4,22 @@
     <title>AI Fun Generator 🔥</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="../../shared/header.js"></script>
+    <script src="../../shared/footer.js"></script>
 </head>
-<body onload="mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="loadHeader('🤖 AI Fun'); loadFooter(); mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="hero min-h-screen bg-neutral">
         <div class="hero-content">
-            <div class="card w-96 bg-base-100 shadow-2xl">
+            <div class="card w-full max-w-2xl bg-base-100 shadow-2xl">
                 <div class="card-body text-center space-y-4">
-                    <h1 class="text-2xl font-bold">AI Fun Generator</h1>
-                    <button onclick="mainFunction()" class="btn btn-primary">Generate Fun Content!</button>
-                    <div id="result"></div>
+                    <h1 class="text-2xl font-bold text-center">🤖 AI Fun Generator</h1>
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button onclick="generateDrawing()" class="btn btn-primary btn-sm">🎨 Draw Something</button>
+                        <button onclick="generateSound()" class="btn btn-secondary btn-sm">🎵 Make Sound</button>
+                        <button onclick="generateJoke()" class="btn btn-accent btn-sm">😂 Tell Joke</button>
+                        <button onclick="generatePattern()" class="btn btn-info btn-sm">🌀 Make Pattern</button>
+                    </div>
+                    <div id="result" class="min-h-[200px]"></div>
                 </div>
             </div>
         </div>
