@@ -43,8 +43,10 @@
     
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="../../shared/header.js"></script>
+    <script src="../../shared/footer.js"></script>
 </head>
-<body onload="initializeDogData(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="loadHeader('🐶 Dog Pictures'); loadFooter(); initializeDogData(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="min-h-screen bg-neutral">
         <div class="hero h-full">
             <div class="hero-content">
