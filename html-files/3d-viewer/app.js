@@ -23,25 +23,19 @@ function trimDescription(description, maxLength = 100) {
 async function getRandomModel() {
     const randomNumber = Math.random();
 
-    if (randomNumber < 0.2) {
-        // 20% chance - fetch Spark Games models
-        return await getSparkGamesModel();
-    } else {
-        // 80% chance - fetch any random model
-        return await getRandomGeneralModel();
-    }
-
+    if (randomNumber < 0.3) return await getSparkGamesModel();
+     else return await getRandomGeneralModel();
 }
 
 // Fetch a Spark Games model specifically
 async function getSparkGamesModel() {
-    // Use search API to find Spark Games models
-    const response = await fetch('https://api.sketchfab.com/v3/search?type=models&q=spark-games&staffpicked=true');
+    // Use search API to find Spark Games models (without staffpicked filter)
+    const response = await fetch('https://api.sketchfab.com/v3/search?type=models&q=spark-games');
 
     if (response.ok) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
-            // Filter models with less than 8k vertices and not current model
+            // Filter models with less than 50k vertices and not current model
             const filteredModels = data.results.filter(model =>
                 model.vertexCount < 8000 && model.uid !== currentModelId
             );
@@ -73,16 +67,23 @@ async function getRandomGeneralModel() {
     if (response.ok) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
-            const randomIndex = Math.floor(Math.random() * data.results.length);
-            const model = data.results[randomIndex];
+            // Filter models with less than 50k vertices and not current model
+            const filteredModels = data.results.filter(model =>
+                model.vertexCount < 50000 && model.uid !== currentModelId
+            );
 
-            return {
-                id: model.uid,
-                title: model.name || 'Cool 3D Model',
-                author: model.user?.displayName || 'Unknown Artist',
-                description: trimDescription(model.description),
-                emoji: '🎮'
-            };
+            if (filteredModels.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredModels.length);
+                const model = filteredModels[randomIndex];
+
+                return {
+                    id: model.uid,
+                    title: model.name || 'Cool 3D Model',
+                    author: model.user?.displayName || 'Unknown Artist',
+                    description: trimDescription(model.description),
+                    emoji: '🎮'
+                };
+            }
         }
     }
 
@@ -107,9 +108,12 @@ function loadModel(modelData) {
 
     // Create the iframe for the 3D model
     const iframeHTML = `<iframe title="${modelData.title}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${modelData.id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1" style="width: 100%; height: 100%;"></iframe>`;
-    
+
     // Update the container with new model
     container.innerHTML = iframeHTML;
+
+    // Update current model ID to avoid duplicates
+    currentModelId = modelData.id;
 
     // Wait a moment, then show model info
     setTimeout(() => {
