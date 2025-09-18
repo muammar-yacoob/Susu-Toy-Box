@@ -234,18 +234,36 @@ function getAstronautNationality(name, craft) {
 
 // Astronaut icon animation functions
 function startAstronautSpin(element) {
-    element.style.animation = 'spinSlow 3s linear infinite';
+    element.classList.remove('scale-out', 'scale-in');
+    element.classList.add('spinning');
 }
 
 function stopAstronautSpin(element) {
-    // Continue rotation while scaling to 0, then reset
-    element.style.animation = 'spinAndScale 1s linear forwards';
+    // Get current rotation to continue seamlessly
+    const computedStyle = window.getComputedStyle(element);
+    const matrix = computedStyle.transform;
+    let currentRotation = 0;
 
-    // Reset after animation completes
+    if (matrix && matrix !== 'none') {
+        const values = matrix.split('(')[1].split(')')[0].split(',');
+        const a = parseFloat(values[0]);
+        const b = parseFloat(values[1]);
+        currentRotation = Math.atan2(b, a) * (180/Math.PI);
+    }
+
+    // Set CSS custom property for current rotation
+    element.style.setProperty('--current-rotation', `${currentRotation}deg`);
+
+    // Continue rotation while scaling to 0
+    element.classList.remove('spinning');
+    element.classList.add('scale-out');
+
+    // After scaling to 0, wait a moment then fade back in
     setTimeout(() => {
-        element.style.animation = 'none';
-        element.style.transform = 'scale(1)';
-    }, 1000);
+        element.classList.remove('scale-out');
+        element.style.removeProperty('--current-rotation');
+        element.classList.add('scale-in');
+    }, 1500); // 500ms scale + 300ms delay
 }
 
 function initApp() {
