@@ -52,7 +52,6 @@
             <div class="hero-content">
                 <div class="card w-96 bg-base-100 shadow-2xl">
                     <div class="card-body text-center space-y-4">
-                        <h1 class="text-2xl font-bold text-center">Doggy Pics</h1>
                     <div class="flex gap-2 justify-center">
                         <button onclick="const data = GetData('next'); if(data) { document.querySelector('#result img').src = data.imageUrl; document.querySelector('#result img').alt = data.breedName; document.querySelector('#result .breed-name').textContent = data.breedName; }" class="btn btn-primary btn-sm">Who's a Good Dog?</button>
                         <button onclick="shareApp()" class="btn btn-secondary btn-sm">📤 Share</button>

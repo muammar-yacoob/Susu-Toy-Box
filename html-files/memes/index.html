@@ -9,17 +9,28 @@
 </head>
 <body onload="loadHeader('😂 Meme Generator'); loadFooter(); initApp(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="hero min-h-screen bg-neutral">
-        <div class="hero-content">
-            <div class="card w-full max-w-2xl bg-base-100 shadow-2xl">
-                <div class="card-body text-center space-y-4">
-                    <h1 class="text-2xl font-bold">😂 Meme Generator</h1>
-                    <input id="topText" type="text" placeholder="Top text (WHEN YOU...)" class="input input-bordered w-full" value="WHEN YOU" onkeyup="updateMemeText()"/>
-                    <input id="bottomText" type="text" placeholder="Bottom text (FINISH HOMEWORK)" class="input input-bordered w-full" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
-                    <div class="flex gap-2">
-                        <button onclick="loadRandomImage()" class="btn btn-primary flex-1">New Image! 🖼️</button>
-                        <button onclick="loadRandomText()" class="btn btn-secondary flex-1">Random Text! 🎲</button>
+        <div class="hero-content w-full max-w-none px-8">
+            <div class="card w-full bg-base-100 shadow-2xl" style="width: 80vw;">
+                <div class="card-body text-center space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <!-- Controls Section -->
+                        <div class="space-y-4 flex flex-col items-center max-w-md mx-auto w-full">
+                            <input id="topText" type="text" placeholder="Top text (WHEN YOU...)" class="input input-bordered w-full text-lg" value="WHEN YOU" onkeyup="updateMemeText()"/>
+                            <input id="bottomText" type="text" placeholder="Bottom text (FINISH HOMEWORK)" class="input input-bordered w-full text-lg" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                            <div class="flex gap-2 w-full">
+                                <button onclick="loadRandomImage()" class="btn btn-primary flex-1 btn-lg">New Image! 🖼️</button>
+                                <button onclick="loadRandomText()" class="btn btn-secondary flex-1 btn-lg">Random Text! 🎲</button>
+                            </div>
+                            <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success w-full btn-lg" style="display: none;">
+                                Download Meme! 📥
+                            </button>
+                        </div>
+
+                        <!-- Meme Display Section -->
+                        <div class="flex justify-center items-center">
+                            <div id="result" class="w-full"></div>
+                        </div>
                     </div>
-                    <div id="result"></div>
                 </div>
             </div>
         </div>
