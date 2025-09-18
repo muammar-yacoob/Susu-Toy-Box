@@ -145,8 +145,8 @@ button:hover {
 }
 
 @keyframes scaleOutContinueRotation {
-    0% { transform: scale(1); }
-    100% { transform: scale(0) rotate(180deg); }
+    0% { transform: scale(1) rotate(var(--current-rotation, 0deg)); }
+    100% { transform: scale(0) rotate(calc(var(--current-rotation, 0deg) + 180deg)); }
 }
 
 @keyframes fadeInOnly {
