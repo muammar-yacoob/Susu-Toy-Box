@@ -9,6 +9,9 @@ const defaultModel = {
     emoji: '🎮'
 };
 
+// Track current model to avoid duplicates
+let currentModelId = defaultModel.id;
+
 // Helper function to trim long descriptions
 function trimDescription(description, maxLength = 100) {
     if (!description) return 'An amazing 3D model you can explore!';
@@ -38,16 +41,23 @@ async function getSparkGamesModel() {
     if (response.ok) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
-            const randomIndex = Math.floor(Math.random() * data.results.length);
-            const model = data.results[randomIndex];
+            // Filter models with less than 8k vertices and not current model
+            const filteredModels = data.results.filter(model =>
+                model.vertexCount < 8000 && model.uid !== currentModelId
+            );
 
-            return {
-                id: model.uid,
-                title: model.name || 'Cool 3D Model',
-                author: model.user?.displayName || 'Spark Games',
-                description: trimDescription(model.description),
-                emoji: '🎮'
-            };
+            if (filteredModels.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredModels.length);
+                const model = filteredModels[randomIndex];
+
+                return {
+                    id: model.uid,
+                    title: model.name || 'Cool 3D Model',
+                    author: model.user?.displayName || 'Spark Games',
+                    description: trimDescription(model.description),
+                    emoji: '🎮'
+                };
+            }
         }
     }
 
@@ -96,7 +106,7 @@ function loadModel(modelData) {
     infoBox.innerHTML = '<h3>Loading new model... ⏳</h3><p>Please wait while we load your new 3D model!</p>';
 
     // Create the iframe for the 3D model
-    const iframeHTML = `<iframe title="${modelData.title}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${modelData.id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1"></iframe>`;
+    const iframeHTML = `<iframe title="${modelData.title}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${modelData.id}/embed?autostart=1&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=1" style="width: 100%; height: 100%;"></iframe>`;
     
     // Update the container with new model
     container.innerHTML = iframeHTML;
