@@ -8,7 +8,7 @@
 </template>
 
 <template id="event-item-template">
-    <div class="{eventClass}" onclick="window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text={type}&dates={googleDate}/{googleDate}&details={description}', '_blank')" style="cursor: pointer;">
+    <div class="{eventClass}" data-type="{typeEncoded}" data-date="{googleDate}" data-description="{descriptionEncoded}" onclick="openCalendarEventData(this)" style="cursor: pointer;">
         <div class="event-type">{type}</div>
         <div class="event-date">📅 {date}</div>
         <div class="event-description">{description}</div>
