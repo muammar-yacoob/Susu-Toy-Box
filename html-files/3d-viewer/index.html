@@ -7,14 +7,24 @@
     <script src="../../shared/header.js"></script>
     <script src="../../shared/footer.js"></script>
 </head>
-<body onload="loadHeader('🎮 3D Model Viewer'); loadFooter(); mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="loadHeader('🎮 3D Model Viewer'); loadFooter(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="hero min-h-screen bg-neutral">
-        <div class="hero-content">
-            <div class="card w-96 bg-base-100 shadow-2xl">
-                <div class="card-body text-center space-y-4">
-                    <h1 class="text-2xl font-bold">3D Model Viewer</h1>
-                    <button onclick="mainFunction()" class="btn btn-primary">Get Random 3D Model!</button>
-                    <div id="result"></div>
+        <div class="hero-content w-full max-w-none px-8">
+            <div class="card w-full bg-base-100 shadow-2xl" style="width: 80vw;">
+                <div class="card-body text-center space-y-6">
+                    <h1 class="text-3xl font-bold">3D Model Viewer</h1>
+
+                    <!-- 3D Model Container -->
+                    <div class="sketchfab-embed-wrapper" style="width: 100%; height: 60vh; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <!-- Model will be loaded here -->
+                    </div>
+
+                    <!-- Model Information -->
+                    <div id="modelInfo" class="text-center">
+                        <h3 class="text-xl font-semibold">Loading 3D model... ⏳</h3>
+                    </div>
+
+                    <button onclick="loadRandomModel()" class="btn btn-primary btn-lg">Get Random 3D Model! 🎲</button>
                 </div>
             </div>
         </div>

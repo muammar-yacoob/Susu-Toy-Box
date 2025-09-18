@@ -2,3 +2,7 @@
 /.claude
 /.claude
 html-files/CODING_RULES.md
+/.playwright-mcp
+/node_modules
+package.json
+package-lock.json

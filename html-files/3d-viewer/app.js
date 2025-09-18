@@ -1,5 +1,14 @@
 // 3D Model Viewer - Simple JavaScript for kids!
 
+// Default model data (BMO from Adventure Time)
+const defaultModel = {
+    id: 'fddc038ff63544218433d14aa80135f3',
+    title: 'BMO from Adventure Time',
+    author: 'Marc Virgili',
+    description: 'BMO fan-art, one of my fav characters from Adventure Time series',
+    emoji: '🎮'
+};
+
 // Helper function to trim long descriptions
 function trimDescription(description, maxLength = 100) {
     if (!description) return 'An amazing 3D model you can explore!';
@@ -10,52 +19,53 @@ function trimDescription(description, maxLength = 100) {
 // Get a random 3D model from Sketchfab API
 async function getRandomModel() {
     const randomNumber = Math.random();
-    
-    if (randomNumber < 0.3) {
-        // 30% chance - fetch Spark Games models
+
+    if (randomNumber < 0.2) {
+        // 20% chance - fetch Spark Games models
         return await getSparkGamesModel();
     } else {
-        // 70% chance - fetch any random model
+        // 80% chance - fetch any random model
         return await getRandomGeneralModel();
     }
-    
+
 }
 
 // Fetch a Spark Games model specifically
 async function getSparkGamesModel() {
-    // Use Spark Games profile URL to get their models
-    const response = await fetch('https://api.sketchfab.com/v3/users/spark-games/models?type=models&downloadable=false&archives_flavours=false&sort_by=-publishedAt');
-    
+    // Use search API to find Spark Games models
+    const response = await fetch('https://api.sketchfab.com/v3/search?type=models&q=spark-games&staffpicked=true');
+
     if (response.ok) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
             const randomIndex = Math.floor(Math.random() * data.results.length);
             const model = data.results[randomIndex];
-            
+
             return {
                 id: model.uid,
                 title: model.name || 'Cool 3D Model',
-                author: 'Spark Games',
+                author: model.user?.displayName || 'Spark Games',
                 description: trimDescription(model.description),
                 emoji: '🎮'
             };
         }
     }
-    
-    // If Spark Games API fails, try general API with Spark Games filter
+
+    // If Spark Games API fails, try general API with safe content
     return await getRandomGeneralModel();
 }
 
-// Fetch a random general model
+// Fetch a random general model with kid-safe filtering
 async function getRandomGeneralModel() {
-    const response = await fetch('https://api.sketchfab.com/v3/models?type=models&downloadable=false&archives_flavours=false&sort_by=-publishedAt');
-    
+    // Use staff picked models for safer content
+    const response = await fetch('https://api.sketchfab.com/v3/models?staffpicked=true&sort_by=-publishedAt');
+
     if (response.ok) {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
             const randomIndex = Math.floor(Math.random() * data.results.length);
             const model = data.results[randomIndex];
-            
+
             return {
                 id: model.uid,
                 title: model.name || 'Cool 3D Model',
@@ -65,7 +75,7 @@ async function getRandomGeneralModel() {
             };
         }
     }
-    
+
     // If all APIs fail, return null to show error message
     return null;
 }
@@ -73,16 +83,7 @@ async function getRandomGeneralModel() {
 // Show model information
 function showModelInfo(modelData) {
     document.getElementById('modelInfo').innerHTML = `
-        <h3>${modelData.emoji} ${modelData.title}</h3>
-        <p><strong>Model by:</strong> ${modelData.author}</p>
-        <p><strong>Description:</strong> ${modelData.description}</p>
-        <p><strong>Features:</strong> Animated and interactive! 🎬</p>
-        <div class="button-group">
-            <button onclick="loadRandomModel()">Get Random Model! 🎲</button>
-            <button onclick="window.open('https://sketchfab.com/3d-models/${modelData.id}', '_blank')" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer;">
-                Go to Model Page 🔗
-            </button>
-        </div>
+        <h3 class="text-xl font-semibold">${modelData.emoji} ${modelData.title}</h3>
     `;
 }
 
@@ -118,3 +119,8 @@ async function loadRandomModel() {
         infoBox.innerHTML = '<h3>❌ Unable to load model</h3><p>Please check your internet connection and try again!</p><div class="button-group"><button onclick="loadRandomModel()">Try Again 🔄</button></div>';
     }
 }
+
+// Load default model on page load
+window.addEventListener('DOMContentLoaded', function() {
+    loadModel(defaultModel);
+});
