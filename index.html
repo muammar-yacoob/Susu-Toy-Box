@@ -2,160 +2,57 @@
 <html data-theme="dark">
 <head>
     <title>Susu's Fun Code Playground! 🎉</title>
-    <!-- Favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
-    <link rel="manifest" href="site.webmanifest">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="shared/header.js"></script>
+    <script src="shared/footer.js"></script>
 </head>
-<body onload="initApp()">
-    <!-- Header -->
-    <header class="navbar bg-base-300 shadow-lg border-b border-base-content/10 sticky top-0 z-50">
-        <div class="navbar-start">
-            <h1 class="text-xl font-bold">🎉 Susu's Playground</h1>
-        </div>
-        <div class="navbar-center hidden lg:flex">
-            <h2 class="text-lg font-semibold">Fun Code Adventures! 🚀</h2>
-        </div>
-        <div class="navbar-end">
-            <button onclick="window.location.reload()" class="btn btn-primary btn-sm hover:scale-105 transition-all duration-200">
-                🏠 Home
-            </button>
-        </div>
-    </header>
+<body onload="loadHeader('🎉 Susu\'s Playground'); loadFooter(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}}); initApp();">
+    <div id="background" class="hero min-h-screen bg-neutral">
+        <div class="hero-content">
+            <div class="bg-gray-700 rounded-3xl p-8 shadow-2xl max-w-4xl mx-auto border border-gray-600 text-white text-center">
+                <h1 class="text-2xl lg:text-4xl font-bold text-yellow-400 mb-5 drop-shadow-lg">🎉 Susu's Fun Code Playground</h1>
+                <p class="text-lg lg:text-xl text-gray-200 mb-8">Welcome to my awesome collection of web apps! Click any app to play with it! 🚀✨</p>
 
-    <!-- Main Content -->
-    <div class="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div id="background" class="py-12">
-            <div class="container mx-auto px-4">
-                <div class="text-center">
-                    <div class="max-w-6xl mx-auto">
-                        <h1 class="text-6xl font-bold text-center mb-8 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                            🎉 Susu's Fun Code Playground! 🎉
-                        </h1>
-
-                        <p class="text-xl text-center mb-12 text-base-content">
-                            Welcome to my super duper awesome collection of web apps! 🚀✨<br>
-                            Click any app to play with it! 😄
-                        </p>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/weather/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🌤️ Weather App</h2>
-                                    <p class="text-sm">Get weather for any city with emojis!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/random-fact/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🤓 Random Facts</h2>
-                                    <p class="text-sm">Learn something new every time!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/cat-pics/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🐱 Cat Pictures</h2>
-                                    <p class="text-sm">Adorable cat photos from the internet!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/dog-pics/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🐶 Dog Pictures</h2>
-                                    <p class="text-sm">Cute doggy pics to make you smile!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/space-info/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🚀 Space Explorer</h2>
-                                    <p class="text-sm">See who's in space right now!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/pokemon/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">⚡ Pokemon Info</h2>
-                                    <p class="text-sm">Discover amazing Pokemon facts!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/3d-viewer/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🎮 3D Model Viewer</h2>
-                                    <p class="text-sm">Interactive 3D models to explore!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/memes/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">😂 Meme Generator</h2>
-                                    <p class="text-sm">Create your own funny memes!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/funny-names/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🎭 Funny Names</h2>
-                                    <p class="text-sm">Generate silly names for fun!</p>
-                                </div>
-                            </div>
-
-                            <div class="card bg-base-100 shadow-2xl border border-base-300 hover:scale-105 transition-all duration-200" style="cursor: pointer;" onclick="window.location.href='html-files/ai-fun/index.html'">
-                                <div class="card-body text-center">
-                                    <h2 class="text-xl font-semibold text-center">🤖 AI Fun</h2>
-                                    <p class="text-sm">Chat with AI and have fun!</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-base-100 p-6 rounded-lg shadow-2xl border border-base-300 max-w-2xl mx-auto">
-                            <h2 class="text-2xl font-bold text-center mb-4">🎯 How to Use!</h2>
-                            <div class="text-left space-y-2">
-                                <p class="text-base">🖱️ <strong>Click any app card</strong> to open that app</p>
-                                <p class="text-base">🌐 <strong>Each app is its own page</strong> - navigate normally</p>
-                                <p class="text-base">🏠 <strong>Home button</strong> brings you back here</p>
-                                <p class="text-base">🎮 <strong>Kid-friendly</strong> and educational!</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="flex flex-wrap justify-center gap-3 mb-5">
+                    <button onclick="window.location.href='html-files/weather/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🌤️ Weather App
+                    </button>
+                    <button onclick="window.location.href='html-files/random-fact/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🤓 Random Facts
+                    </button>
+                    <button onclick="window.location.href='html-files/cat-pics/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🐱 Cat Pictures
+                    </button>
+                    <button onclick="window.location.href='html-files/dog-pics/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🐶 Dog Pictures
+                    </button>
+                    <button onclick="window.location.href='html-files/space-info/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🚀 Space Explorer
+                    </button>
+                    <button onclick="window.location.href='html-files/pokemon/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        ⚡ Pokemon Info
+                    </button>
+                    <button onclick="window.location.href='html-files/3d-viewer/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🎮 3D Model Viewer
+                    </button>
+                    <button onclick="window.location.href='html-files/memes/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        😂 Meme Generator
+                    </button>
+                    <button onclick="window.location.href='html-files/funny-names/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🎭 Funny Names
+                    </button>
+                    <button onclick="window.location.href='html-files/ai-fun/index.html'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                        🤖 AI Fun
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer footer-center p-6 bg-base-300 text-base-content border-t border-base-content/10">
-        <div class="flex flex-col items-center space-y-2">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl">🎮</span>
-                <p class="text-lg font-semibold">Susu's Fun Code Playground</p>
-                <span class="text-2xl">🎮</span>
-            </div>
-            <p class="text-sm opacity-70">© 2025 Susu's Toy Box. All rights reserved.</p>
-            <p class="text-xs opacity-60">Made with 💖 by Susu! Educational fun for everyone! 🌟</p>
-        </div>
-    </footer>
-
     <script>
         function initApp() {
-            particlesJS('background', {
-                particles: {
-                    number: { value: 150 },
-                    color: { value: '#ff69b4' },
-                    opacity: { value: 0.6 },
-                    size: { value: 4 },
-                    line_linked: { enable: false },
-                    move: { enable: true, speed: 2, direction: 'bottom' }
-                }
-            });
+            // Initialization happens in onload
         }
     </script>
 </body>
