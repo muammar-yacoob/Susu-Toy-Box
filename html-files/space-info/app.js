@@ -1,5 +1,5 @@
 const astronautsTemplate = `<div class="total">People in Space Right Now: {number} 👨‍🚀</div><div class="astronauts-compact">{astronauts}</div><p style="margin-top: 20px;">Want to know more about space? Visit NASA's website! 🌟</p>`;
-const astronautItemTemplate = `<div class="astronaut-compact"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;" onmouseenter="this.style.animation='spin 1s linear infinite'" onmouseleave="this.style.animation='none'"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>`;
+const astronautItemTemplate = `<div class="astronaut-compact" onclick="showAstronautDetails('{name}', '{craft}')" style="cursor: pointer; transition: all 0.3s ease;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;" onmouseenter="startAstronautSpin(this)" onmouseleave="stopAstronautSpin(this)"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>`;
 const eventsTemplate = `<div class="section-title">☄️ Space Events Calendar! ☄️</div><div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div><div class="events-container">{events}</div><p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>`;
 const eventItemTemplate = `<div class="{eventClass}" onclick="window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text={type}&dates={googleDate}/{googleDate}&details={description}', '_blank')" style="cursor: pointer;"><div class="event-type">{type}</div><div class="event-date">📅 {date}</div><div class="event-description">{description}</div></div>`;
 const planetsTemplate = `<div class="section-title">🪐 Our Solar System (8 Planets + Pluto)! 🪐</div><div class="planets-container">{planets}</div><p style="margin-top: 20px; color: #ffd700; font-size: 14px;">Planet animations by <a href="https://graysea.tumblr.com/post/158035770070/the-solar-system-bonus-pluto" target="_blank" style="color: #3498db;">graysea</a> 🌟</p>`;
@@ -77,7 +77,7 @@ async function getSpaceInfo() {
     const data = await response.json();
     const astronautsHtml = data.people.map(p => {
         const flag = getCountryFlag(p);
-        return astronautItemTemplate.replace('{name}', p.name).replace('{craft}', p.craft).replace('{flag}', flag);
+        return astronautItemTemplate.replace(/{name}/g, p.name).replace(/{craft}/g, p.craft).replace('{flag}', flag);
     }).join('');
     result.innerHTML = astronautsTemplate.replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
 }
@@ -134,6 +134,118 @@ function showUpcomingEvents() {
         return eventItemTemplate.replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description);
     }).join('') : '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
     result.innerHTML = eventsTemplate.replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
+}
+
+// Load modal template once on page load
+let astronautModalTemplate = null;
+
+async function loadAstronautModalTemplate() {
+    if (!astronautModalTemplate) {
+        const response = await fetch('astronaut-modal.html');
+        astronautModalTemplate = await response.text();
+    }
+    return astronautModalTemplate;
+}
+
+// Simple astronaut details message box
+async function showAstronautDetails(name, craft) {
+    // Generate basic info
+    const age = Math.floor(Math.random() * 20) + 35; // Random age 35-55
+    const nationality = getAstronautNationality(name, craft);
+
+    // Load template and populate with data
+    const template = await loadAstronautModalTemplate();
+    const modalContent = template
+        .replace(/{name}/g, name)
+        .replace(/{age}/g, age)
+        .replace(/{nationality}/g, nationality)
+        .replace(/{craft}/g, craft);
+
+    // Create small message box
+    const messageBox = document.createElement('div');
+    messageBox.id = 'astronautMessage';
+    messageBox.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border: 2px solid #ffd700;
+        border-radius: 15px;
+        padding: 20px;
+        z-index: 1000;
+        color: white;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        max-width: 300px;
+        width: 90%;
+    `;
+
+    messageBox.innerHTML = modalContent;
+
+    // Add overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'astronautOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 999;
+    `;
+    overlay.onclick = closeAstronautMessage;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(messageBox);
+}
+
+function closeAstronautMessage() {
+    const message = document.getElementById('astronautMessage');
+    const overlay = document.getElementById('astronautOverlay');
+    if (message) message.remove();
+    if (overlay) overlay.remove();
+}
+
+function getAstronautNationality(name, craft) {
+    const nameLower = name.toLowerCase();
+
+    // Check craft first
+    if (craft.toLowerCase().includes('tiangong') || craft.toLowerCase().includes('shenzhou')) {
+        return 'Chinese';
+    }
+
+    // Check name patterns
+    if (nameLower.includes('wang') || nameLower.includes('zhang') || nameLower.includes('li') || nameLower.includes('chen')) {
+        return 'Chinese';
+    } else if (nameLower.includes('ivan') || nameLower.includes('sergey') || nameLower.includes('alexander') || nameLower.includes('dmitri')) {
+        return 'Russian';
+    } else if (nameLower.includes('antonio') || nameLower.includes('giuseppe') || nameLower.includes('marco')) {
+        return 'Italian';
+    } else if (nameLower.includes('thomas') || nameLower.includes('matthias') || nameLower.includes('alexander')) {
+        return 'German';
+    } else if (nameLower.includes('david') || nameLower.includes('chris') || nameLower.includes('scott')) {
+        return 'American';
+    }
+
+    return 'International';
+}
+
+// Astronaut icon animation functions
+function startAstronautSpin(element) {
+    element.style.animation = 'spinSlow 3s linear infinite';
+}
+
+function stopAstronautSpin(element) {
+    // Continue rotation while scaling to 0, then reset
+    element.style.animation = 'spinAndScale 1s linear forwards';
+
+    // Reset after animation completes
+    setTimeout(() => {
+        element.style.animation = 'none';
+        element.style.transform = 'scale(1)';
+    }, 1000);
 }
 
 function initApp() {

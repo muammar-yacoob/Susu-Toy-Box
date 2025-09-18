@@ -131,6 +131,17 @@ button:hover {
     to { transform: rotate(360deg); }
 }
 
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes spinAndScale {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(0); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
 /* Common text styles */
 .total, .section-title {
     font-size: clamp(18px, 3.5vw, 24px);
