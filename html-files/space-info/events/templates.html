@@ -1,0 +1,16 @@
+<!-- Events Templates -->
+
+<template id="events-template">
+    <div class="section-title">☄️ Space Events Calendar! ☄️</div>
+    <div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div>
+    <div class="events-container">{events}</div>
+    <p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>
+</template>
+
+<template id="event-item-template">
+    <div class="{eventClass}" onclick="window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text={type}&dates={googleDate}/{googleDate}&details={description}', '_blank')" style="cursor: pointer;">
+        <div class="event-type">{type}</div>
+        <div class="event-date">📅 {date}</div>
+        <div class="event-description">{description}</div>
+    </div>
+</template>

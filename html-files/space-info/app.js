@@ -1,9 +1,48 @@
-const astronautsTemplate = `<div class="total">People in Space Right Now: {number} 👨‍🚀</div><div class="astronauts-compact">{astronauts}</div><p style="margin-top: 20px;">Want to know more about space? Visit NASA's website! 🌟</p>`;
-const astronautItemTemplate = `<div class="astronaut-compact" onclick="showAstronautDetails('{name}', '{craft}')" style="cursor: pointer; transition: all 0.3s ease;" onmouseenter="this.style.transform='scale(1.02)'; startAstronautSpin(this.querySelector('.astronaut-icon'))" onmouseleave="this.style.transform='scale(1)'; stopAstronautSpin(this.querySelector('.astronaut-icon'))"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>`;
-const eventsTemplate = `<div class="section-title">☄️ Space Events Calendar! ☄️</div><div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div><div class="events-container">{events}</div><p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>`;
-const eventItemTemplate = `<div class="{eventClass}" onclick="window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text={type}&dates={googleDate}/{googleDate}&details={description}', '_blank')" style="cursor: pointer;"><div class="event-type">{type}</div><div class="event-date">📅 {date}</div><div class="event-description">{description}</div></div>`;
-const planetsTemplate = `<div class="section-title">🪐 Our Solar System (8 Planets + Pluto)! 🪐</div><div class="planets-container">{planets}</div><p style="margin-top: 20px; color: #ffd700; font-size: 14px;">Planet animations by <a href="https://graysea.tumblr.com/post/158035770070/the-solar-system-bonus-pluto" target="_blank" style="color: #3498db;">graysea</a> 🌟</p>`;
-const planetItemTemplate = `<div class="planet-item"><div class="planet-name">{name}</div><img src="{gif}" alt="{name}" class="planet-gif" loading="lazy"><div class="planet-fact">{fact}</div><div class="planet-comparison"><div class="comparison-item"><span class="comparison-label">🌍 Size:</span> {size}</div><div class="comparison-item"><span class="comparison-label">⚖️ Gravity:</span> {gravity}</div><div class="comparison-item"><span class="comparison-label">🕐 Day:</span> {dayLength}</div><div class="comparison-item"><span class="comparison-label">🌡️ Temp:</span> {temperature}</div></div></div>`;
+// Template cache
+let templates = {};
+
+// Load templates from specific HTML files
+async function loadTemplates() {
+    if (Object.keys(templates).length > 0) return; // Already loaded
+
+    const templateFiles = [
+        { path: 'astronauts/templates.html', keys: ['astronauts', 'astronautitem'] },
+        { path: 'events/templates.html', keys: ['events', 'eventitem'] },
+        { path: 'planets/templates.html', keys: ['planets', 'planetitem'] }
+    ];
+
+    try {
+        for (const file of templateFiles) {
+            const response = await fetch(file.path);
+            const html = await response.text();
+
+            // Create a temporary div to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Extract template contents
+            const templateElements = tempDiv.querySelectorAll('template');
+            templateElements.forEach(template => {
+                const id = template.id.replace('-template', '').replace(/-/g, '');
+                templates[id] = template.innerHTML.trim();
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load templates:', error);
+        // Fallback templates if loading fails
+        templates = {
+            astronauts: '<div class="loading">Loading astronauts... 🚀</div>',
+            astronautitem: '<div class="loading">Loading... 🚀</div>',
+            events: '<div class="loading">Loading events... 🚀</div>',
+            eventitem: '<div class="loading">Loading... 🚀</div>',
+            planets: '<div class="loading">Loading planets... 🚀</div>',
+            planetitem: '<div class="loading">Loading... 🚀</div>'
+        };
+    }
+}
+
+// Template getters
+const getTemplate = (name) => templates[name] || '<div class="loading">Loading... 🚀</div>';
 
 const planets = [{name:"Mercury",gif:"planets/Mercury.gif",fact:"Smallest planet, closest to the Sun! ☀️",gravity:"38% of Earth's gravity",size:"0.38x Earth's size",dayLength:"176 Earth days",temperature:"427°C (800°F) to -173°C (-280°F)"},{name:"Venus",gif:"planets/Venus.gif",fact:"Hottest planet in our solar system! 🔥",gravity:"91% of Earth's gravity",size:"0.95x Earth's size",dayLength:"243 Earth days",temperature:"462°C (864°F) - hotter than Mercury!"},{name:"Earth",gif:"planets/Earth.gif",fact:"Only planet with life (that we know of)! 🌍",gravity:"1.0x Earth's gravity (baseline)",size:"1.0x Earth's size (baseline)",dayLength:"24 hours",temperature:"15°C (59°F) average"},{name:"Mars",gif:"planets/Mars.gif",fact:"The Red Planet - future home of humans! 🚀",gravity:"38% of Earth's gravity",size:"0.53x Earth's size",dayLength:"24.6 hours",temperature:"-65°C (-85°F) average"},{name:"Jupiter",gif:"planets/Jupiter.gif",fact:"Largest planet - has a Great Red Spot storm! 🌀",gravity:"2.5x Earth's gravity",size:"11.2x Earth's size",dayLength:"9.9 hours",temperature:"-110°C (-166°F)"},{name:"Saturn",gif:"planets/Saturn.gif",fact:"Famous for its beautiful rings! 💍",gravity:"1.1x Earth's gravity",size:"9.4x Earth's size",dayLength:"10.7 hours",temperature:"-140°C (-220°F)"},{name:"Uranus",gif:"planets/Uranus.gif",fact:"Rotates on its side - the sideways planet! 🔄",gravity:"0.9x Earth's gravity",size:"4.0x Earth's size",dayLength:"17.2 hours",temperature:"-195°C (-320°F)"},{name:"Neptune",gif:"planets/Neptune.gif",fact:"Windiest planet - winds up to 2,100 km/h! 💨",gravity:"1.1x Earth's gravity",size:"3.9x Earth's size",dayLength:"16.1 hours",temperature:"-200°C (-328°F)"},{name:"Pluto",gif:"planets/Pluto.gif",fact:"Dwarf planet (no longer a planet since 2006)! ❤️",gravity:"6% of Earth's gravity",size:"0.18x Earth's size",dayLength:"153.3 hours (6.4 Earth days)",temperature:"-225°C (-375°F)"}];
 
@@ -77,18 +116,18 @@ async function getSpaceInfo() {
     const data = await response.json();
     const astronautsHtml = data.people.map(p => {
         const flag = getCountryFlag(p);
-        return astronautItemTemplate.replace(/{name}/g, p.name).replace(/{craft}/g, p.craft).replace('{flag}', flag);
+        return getTemplate('astronautitem').replace(/{name}/g, p.name).replace(/{craft}/g, p.craft).replace('{flag}', flag);
     }).join('');
-    result.innerHTML = astronautsTemplate.replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
+    result.innerHTML = getTemplate('astronauts').replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
 }
 
 function showPlanets() {
     const result = document.getElementById('spaceResult');
     const planetsHtml = planets.map(p => {
         const planetClass = p.name === 'Pluto' ? 'planet-item pluto' : 'planet-item';
-        return planetItemTemplate.replace('class="planet-item"', `class="${planetClass}"`).replace(/{name}/g, p.name).replace('{gif}', p.gif).replace('{fact}', p.fact).replace('{size}', p.size).replace('{gravity}', p.gravity).replace('{dayLength}', p.dayLength).replace('{temperature}', p.temperature);
+        return getTemplate('planetitem').replace('class="planet-item"', `class="${planetClass}"`).replace(/{name}/g, p.name).replace('{gif}', p.gif).replace('{fact}', p.fact).replace('{size}', p.size).replace('{gravity}', p.gravity).replace('{dayLength}', p.dayLength).replace('{temperature}', p.temperature);
     }).join('');
-    result.innerHTML = planetsTemplate.replace('{planets}', planetsHtml);
+    result.innerHTML = getTemplate('planets').replace('{planets}', planetsHtml);
 }
 
 function showUpcomingEvents() {
@@ -131,9 +170,9 @@ function showUpcomingEvents() {
     const eventsHtml = events.length > 0 ? events.map(e => {
         const isBestSeason = e.description.includes('Best viewing') || e.date.includes('Best Season');
         const eventClass = isBestSeason ? 'event-item best-season' : 'event-item';
-        return eventItemTemplate.replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description);
+        return getTemplate('eventitem').replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description);
     }).join('') : '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
-    result.innerHTML = eventsTemplate.replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
+    result.innerHTML = getTemplate('events').replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
 }
 
 // Load modal template once on page load
@@ -266,6 +305,7 @@ function stopAstronautSpin(element) {
     }, 1800); // 1200ms scale + 600ms delay
 }
 
-function initApp() {
+async function initApp() {
+    await loadTemplates();
     getSpaceInfo();
 }

@@ -1,0 +1,18 @@
+<!-- Astronauts Templates -->
+
+<template id="astronauts-template">
+    <div class="total">People in Space Right Now: {number} 👨‍🚀</div>
+    <div class="astronauts-compact">{astronauts}</div>
+    <p style="margin-top: 20px;">Want to know more about space? Visit NASA's website! 🌟</p>
+</template>
+
+<template id="astronaut-item-template">
+    <div class="astronaut-compact" onclick="showAstronautDetails('{name}', '{craft}')" style="cursor: pointer; transition: all 0.3s ease;" onmouseenter="this.style.transform='scale(1.02)'; startAstronautSpin(this.querySelector('.astronaut-icon'))" onmouseleave="this.style.transform='scale(1)'; stopAstronautSpin(this.querySelector('.astronaut-icon'))">
+        <img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;">
+        <div class="astronaut-info">
+            <div class="astronaut-name">{name}</div>
+            <div class="astronaut-craft">{craft}</div>
+        </div>
+        <img src="{flag}" alt="Country Flag" class="astronaut-flag">
+    </div>
+</template>
