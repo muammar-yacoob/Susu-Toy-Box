@@ -85,7 +85,7 @@ button:hover {
 }
 
 .astronaut-icon.scale-out {
-    animation: scaleOutContinueRotation 0.5s ease-out forwards;
+    animation: scaleOutContinueRotation 1.2s ease-out forwards;
 }
 
 .astronaut-icon.scale-in {

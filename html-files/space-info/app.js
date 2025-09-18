@@ -263,7 +263,7 @@ function stopAstronautSpin(element) {
         element.classList.remove('scale-out');
         element.style.removeProperty('--current-rotation');
         element.classList.add('scale-in');
-    }, 1500); // 500ms scale + 300ms delay
+    }, 1800); // 1200ms scale + 600ms delay
 }
 
 function initApp() {
