@@ -1,0 +1,27 @@
+<!-- NASA APOD Templates -->
+
+<template id="apod-template">
+    <div class="section-title">🌌 NASA Astronomy Picture of the Day 🌌</div>
+    <div class="apod-container">
+        <div class="apod-item">
+            <div class="apod-title">{title}</div>
+            <div class="apod-date">📅 {date}</div>
+            <div class="apod-media-container">
+                {media}
+            </div>
+            <div class="apod-explanation">{explanation}</div>
+            <div class="apod-credit">{copyright}</div>
+        </div>
+    </div>
+    <p style="margin-top: 20px; color: #ffd700;">Discover the cosmos through NASA's daily space imagery! 🌟</p>
+</template>
+
+<template id="apod-image-template">
+    <img src="{url}" alt="{title}" class="apod-image" onclick="openImageFullscreen('{hdurl}', '{title}')" style="cursor: pointer;" loading="lazy">
+</template>
+
+<template id="apod-video-template">
+    <div class="apod-video-wrapper">
+        <iframe src="{url}" class="apod-video" frameborder="0" allowfullscreen></iframe>
+    </div>
+</template>
