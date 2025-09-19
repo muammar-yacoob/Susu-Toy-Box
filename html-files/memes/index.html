@@ -17,18 +17,41 @@
                         <div class="bg-base-200 p-8 rounded-3xl shadow-xl max-w-lg w-full">
                             <div class="space-y-6">
                                 <!-- Text Inputs -->
-                                <div class="form-control w-full space-y-6">
+                                <div class="form-control w-full space-y-3">
                                     <div class="form-control w-full">
-                                        <div class="label">
-                                            <span class="label-text text-lg font-bold mx-auto">Top Text</span>
+                                        <div class="label py-1">
+                                            <span class="label-text font-bold mx-auto">Top Text</span>
                                         </div>
-                                        <input id="topText" type="text" placeholder="WHEN YOU..." class="input input-bordered w-full text-center" value="WHEN YOU" onkeyup="updateMemeText()"/>
+                                        <input id="topText" type="text" placeholder="WHEN YOU..." class="input input-bordered input-sm w-full text-center" value="WHEN YOU" onkeyup="updateMemeText()"/>
                                     </div>
                                     <div class="form-control w-full">
-                                        <div class="label">
-                                            <span class="label-text text-lg font-bold mx-auto">Bottom Text</span>
+                                        <div class="label py-1">
+                                            <span class="label-text font-bold mx-auto">Bottom Text</span>
                                         </div>
-                                        <input id="bottomText" type="text" placeholder="FINISH HOMEWORK..." class="input input-bordered w-full text-center" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                                        <input id="bottomText" type="text" placeholder="FINISH HOMEWORK..." class="input input-bordered input-sm w-full text-center" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                                    </div>
+                                    <div class="form-control w-full">
+                                        <div class="flex items-center justify-between">
+                                            <span class="label-text font-bold text-sm">Font Size</span>
+                                            <div class="flex items-center gap-2">
+                                                <span id="fontSizeValue" class="text-xs font-mono bg-base-300 px-2 py-1 rounded">50px</span>
+                                                <button onclick="resetFontSize()" class="btn btn-xs btn-ghost">↻</button>
+                                            </div>
+                                        </div>
+                                        <input id="fontSizeSlider" type="range" min="10" max="100" value="50" class="range range-xs range-primary" oninput="updateSelectedTextProperty('fontSize', this.value); updateSliderDisplay('fontSize', this.value)" disabled/>
+                                    </div>
+                                    <div class="form-control w-full">
+                                        <div class="flex items-center justify-between">
+                                            <span class="label-text font-bold text-sm">Rotation</span>
+                                            <div class="flex items-center gap-2">
+                                                <span id="rotationValue" class="text-xs font-mono bg-base-300 px-2 py-1 rounded">0°</span>
+                                                <button onclick="resetRotation()" class="btn btn-xs btn-ghost">↻</button>
+                                            </div>
+                                        </div>
+                                        <input id="rotationSlider" type="range" min="-180" max="180" value="0" class="range range-xs range-secondary" oninput="updateSelectedTextProperty('rotation', this.value); updateSliderDisplay('rotation', this.value)" disabled/>
+                                    </div>
+                                    <div class="text-center text-xs opacity-60 py-1">
+                                        Click text to toggle selection
                                     </div>
                                 </div>
 
@@ -38,9 +61,7 @@
                                 <!-- Action Buttons -->
                                 <div class="divider"></div>
                                 <div class="btn-group btn-group-horizontal justify-center">
-                                    <button onclick="loadRandomImage()" class="btn btn-primary">
-                                        🖼️ Random
-                                    </button>
+                                    <button onclick="loadRandomImage()" class="btn btn-primary">🖼️ Random</button>
                                     <button onclick="document.getElementById('imageUpload').click()" class="btn btn-accent">
                                         📤 Upload
                                     </button>
@@ -56,14 +77,10 @@
                             <div id="result" class="w-full flex justify-center"></div>
 
                             <!-- Share and Save Buttons -->
-                            <div class="w-full flex justify-center" id="memeActions" style="display: none;">
+                            <div class="flex items-center justify-between">
                                 <div class="flex gap-2">
-                                    <button id="shareBtn" onclick="shareMeme()" class="btn btn-info">
-                                        📱 Share
-                                    </button>
-                                    <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success">
-                                        📥 Save
-                                    </button>
+                                    <button id="shareBtn" onclick="shareMeme()" class="btn btn-info">📱 Share</button>
+                                    <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success">📥 Save</button>
                                 </div>
                             </div>
                         </div>

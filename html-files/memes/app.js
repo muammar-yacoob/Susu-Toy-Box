@@ -1,6 +1,13 @@
 const topTexts = ["WHEN YOU", "ME WHEN", "HOW I FEEL", "WHEN MOM SAYS", "ME TRYING TO"];
 const bottomTexts = ["FINISH HOMEWORK", "GET ICE CREAM", "PLAY GAMES", "EAT PIZZA", "GO TO BED"];
 let currentMeme = "";
+let currentMemeIndex = 0;
+let allMemes = [];
+let selectedTexts = new Set(['topText', 'bottomText']); // Both selected by default
+let textProperties = {
+    topText: { fontSize: 50, rotation: 0, x: null, y: null },
+    bottomText: { fontSize: 50, rotation: 0, x: null, y: null }
+};
 
 async function initApp() {
     const result = document.getElementById('result');
@@ -19,13 +26,33 @@ async function loadRandomImage() {
 
     const response = await fetch('https://api.imgflip.com/get_memes');
     const data = await response.json();
-    const meme = data.data.memes[Math.floor(Math.random() * data.data.memes.length)];
-    currentMeme = meme.url;
+    allMemes = data.data.memes;
+    currentMemeIndex = Math.floor(Math.random() * allMemes.length);
+    currentMeme = allMemes[currentMemeIndex].url;
+
+    // Reset text positions to center when loading new image
+    resetTextPositions();
 
     updateMemeDisplay();
 
     button.innerHTML = '🖼️ Random';
     button.disabled = false;
+}
+
+function nextMeme() {
+    if (allMemes.length === 0) return;
+    currentMemeIndex = (currentMemeIndex + 1) % allMemes.length;
+    currentMeme = allMemes[currentMemeIndex].url;
+    resetTextPositions();
+    updateMemeDisplay();
+}
+
+function previousMeme() {
+    if (allMemes.length === 0) return;
+    currentMemeIndex = (currentMemeIndex - 1 + allMemes.length) % allMemes.length;
+    currentMeme = allMemes[currentMemeIndex].url;
+    resetTextPositions();
+    updateMemeDisplay();
 }
 
 function handleImageUpload(event) {
@@ -59,7 +86,28 @@ function loadRandomText() {
     document.getElementById('topText').value = topText;
     document.getElementById('bottomText').value = bottomText;
 
+    // Reset text positions to center when loading new text
+    resetTextPositions();
+
     if (currentMeme) updateMemeDisplay();
+}
+
+function resetTextPositions() {
+    // Reset all text properties to defaults
+    textProperties.topText.x = null;
+    textProperties.topText.y = null;
+    textProperties.topText.fontSize = 50;
+    textProperties.topText.rotation = 0;
+    textProperties.bottomText.x = null;
+    textProperties.bottomText.y = null;
+    textProperties.bottomText.fontSize = 50;
+    textProperties.bottomText.rotation = 0;
+
+    // Update UI sliders to reflect the reset values
+    document.getElementById('fontSizeSlider').value = 50;
+    document.getElementById('rotationSlider').value = 0;
+    updateSliderDisplay('fontSize', 50);
+    updateSliderDisplay('rotation', 0);
 }
 
 function updateMemeText() {
@@ -73,13 +121,32 @@ function updateMemeDisplay() {
     const downloadBtn = document.getElementById('downloadBtn');
     const shareBtn = document.getElementById('shareBtn');
 
+    // Get positions if they exist
+    const topX = textProperties.topText.x || '50%';
+    const topY = textProperties.topText.y || '12px';
+    const bottomX = textProperties.bottomText.x || '50%';
+    const bottomY = textProperties.bottomText.y || 'auto';
+
     result.innerHTML = `
         <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl mx-auto" style="max-width: fit-content;">
-            <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto;">
-                <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 100%; height: auto; max-width: 500px; max-height: 400px; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="adjustFontSize()">
-                <div id="topTextDiv" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; width: 95%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px;">${topText}</div>
-                <div id="bottomTextDiv" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; width: 95%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px;">${bottomText}</div>
-                <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px;">sundus.fun</div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button onclick="previousMeme()" class="btn btn-circle btn-ghost text-white hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; user-select: none;">
+                    <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 100%; height: auto; max-width: 500px; max-height: 400px; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
+                    <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
+                    <div id="bottomTextDiv" data-text-id="bottomText" class="draggable-text" style="position: absolute; ${bottomY === 'auto' ? 'bottom: 12px' : 'top: ' + bottomY + 'px'}; left: ${typeof bottomX === 'string' ? bottomX : bottomX + 'px'}; transform: ${typeof bottomX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.bottomText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.bottomText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${bottomText}</div>
+                    <div id="hoverGizmo" style="display: none; position: absolute; border: 2px dashed #00ff00; background: rgba(0,255,0,0.1); pointer-events: none; z-index: 1001; border-radius: 4px;"></div>
+                    <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px; display: none;">sundus.fun</div>
+                </div>
+                <button onclick="nextMeme()" class="btn btn-circle btn-ghost text-white hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     `;
@@ -87,33 +154,283 @@ function updateMemeDisplay() {
     // Show action buttons when meme is displayed
     const memeActions = document.getElementById('memeActions');
     memeActions.style.display = 'flex';
+
+    // Update text wrapping after image loads
+    setTimeout(updateTextWrapping, 100);
+}
+
+let isDragging = false;
+let currentDragElement = null;
+let offsetX = 0;
+let offsetY = 0;
+
+function setupDraggableText() {
+    const draggableElements = document.querySelectorAll('.draggable-text');
+
+    draggableElements.forEach(element => {
+        element.addEventListener('mousedown', startDrag);
+        element.addEventListener('touchstart', startDrag, { passive: false });
+        element.addEventListener('click', toggleTextSelection);
+        element.addEventListener('mouseenter', showHoverGizmo);
+        element.addEventListener('mouseleave', hideHoverGizmo);
+    });
+
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('touchend', stopDrag);
+
+    // Initialize with both texts selected and update UI
+    updateInputHighlights();
+    updateSliderValues();
+    updateSliderDisplays();
+    updateTextWrapping();
+}
+
+function updateTextWrapping() {
+    const memeImage = document.getElementById('memeImage');
+    if (!memeImage) return;
+
+    const imageWidth = memeImage.getBoundingClientRect().width;
+    const maxTextWidth = imageWidth * 0.9; // 90% of image width
+
+    const draggableElements = document.querySelectorAll('.draggable-text');
+    draggableElements.forEach(element => {
+        element.style.maxWidth = maxTextWidth + 'px';
+    });
+}
+
+function toggleTextSelection(e) {
+    e.stopPropagation();
+    const textId = e.target.getAttribute('data-text-id');
+
+    // Toggle selection: if selected, deselect (unless it's the only one selected)
+    if (selectedTexts.has(textId)) {
+        if (selectedTexts.size > 1) {
+            selectedTexts.delete(textId);
+        }
+        // Can't deselect if it's the only one selected
+    } else {
+        selectedTexts.add(textId);
+    }
+
+    updateInputHighlights();
+    updateSliderValues();
+    updateSliderDisplays();
+}
+
+function showHoverGizmo(e) {
+    const textId = e.target.getAttribute('data-text-id');
+    if (!selectedTexts.has(textId)) return; // Only show for selected text
+
+    const gizmo = document.getElementById('hoverGizmo');
+    const rect = e.target.getBoundingClientRect();
+    const container = document.getElementById('memeContainer');
+    const containerRect = container.getBoundingClientRect();
+
+    // Center the gizmo around the text element
+    const centerX = rect.left + rect.width / 2 - containerRect.left;
+    const centerY = rect.top + rect.height / 2 - containerRect.top;
+
+    const gizmoWidth = rect.width + 20;
+    const gizmoHeight = rect.height + 20;
+
+    gizmo.style.left = (centerX - gizmoWidth / 2) + 'px';
+    gizmo.style.top = (centerY - gizmoHeight / 2) + 'px';
+    gizmo.style.width = gizmoWidth + 'px';
+    gizmo.style.height = gizmoHeight + 'px';
+    gizmo.style.display = 'block';
+}
+
+function hideHoverGizmo() {
+    const gizmo = document.getElementById('hoverGizmo');
+    gizmo.style.display = 'none';
+}
+
+function updateInputHighlights() {
+    const topInput = document.getElementById('topText');
+    const bottomInput = document.getElementById('bottomText');
+
+    // Highlight selected inputs
+    if (selectedTexts.has('topText')) {
+        topInput.classList.add('input-primary');
+        topInput.classList.remove('input-bordered');
+    } else {
+        topInput.classList.remove('input-primary');
+        topInput.classList.add('input-bordered');
+    }
+
+    if (selectedTexts.has('bottomText')) {
+        bottomInput.classList.add('input-primary');
+        bottomInput.classList.remove('input-bordered');
+    } else {
+        bottomInput.classList.remove('input-primary');
+        bottomInput.classList.add('input-bordered');
+    }
+}
+
+function updateSliderValues() {
+    if (selectedTexts.size === 0) return;
+
+    // If multiple texts selected, show average values or first selected
+    const firstSelected = Array.from(selectedTexts)[0];
+
+    document.getElementById('fontSizeSlider').value = textProperties[firstSelected].fontSize;
+    document.getElementById('rotationSlider').value = textProperties[firstSelected].rotation;
+
+    // Sliders are always enabled since there's always a selection
+    document.getElementById('fontSizeSlider').disabled = false;
+    document.getElementById('rotationSlider').disabled = false;
+}
+
+function updateSelectedTextProperty(property, value) {
+    if (selectedTexts.size === 0) return;
+
+    // Apply property to all selected texts
+    selectedTexts.forEach(textId => {
+        textProperties[textId][property] = parseFloat(value);
+
+        const element = document.querySelector(`[data-text-id="${textId}"]`);
+        if (element) {
+            if (property === 'fontSize') {
+                element.style.fontSize = value + 'px';
+            } else if (property === 'rotation') {
+                element.style.transform = `translateX(-50%) rotate(${value}deg)`;
+            }
+        }
+    });
+}
+
+function updateSliderDisplay(property, value) {
+    if (property === 'fontSize') {
+        document.getElementById('fontSizeValue').textContent = value + 'px';
+    } else if (property === 'rotation') {
+        document.getElementById('rotationValue').textContent = value + '°';
+    }
+}
+
+function updateSliderDisplays() {
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const rotationSlider = document.getElementById('rotationSlider');
+
+    updateSliderDisplay('fontSize', fontSizeSlider.value);
+    updateSliderDisplay('rotation', rotationSlider.value);
+}
+
+function resetFontSize() {
+    const defaultFontSize = 50;
+    document.getElementById('fontSizeSlider').value = defaultFontSize;
+    updateSelectedTextProperty('fontSize', defaultFontSize);
+    updateSliderDisplay('fontSize', defaultFontSize);
+}
+
+function resetRotation() {
+    const defaultRotation = 0;
+    document.getElementById('rotationSlider').value = defaultRotation;
+    updateSelectedTextProperty('rotation', defaultRotation);
+    updateSliderDisplay('rotation', defaultRotation);
+}
+
+function startDrag(e) {
+    e.preventDefault();
+    isDragging = true;
+    currentDragElement = e.target;
+
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+
+    const rect = currentDragElement.getBoundingClientRect();
+
+    // Calculate offset from the center of the text element
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    offsetX = clientX - centerX;
+    offsetY = clientY - centerY;
+
+    currentDragElement.style.zIndex = '1000';
+}
+
+function drag(e) {
+    if (!isDragging || !currentDragElement) return;
+
+    e.preventDefault();
+
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+
+    const container = document.getElementById('memeContainer');
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate new center position relative to container (accounting for the cursor being at center)
+    let newCenterX = clientX - containerRect.left - offsetX;
+    let newCenterY = clientY - containerRect.top - offsetY;
+
+    // Convert center position to left position for CSS (since we use translateX(-50%))
+    let newX = newCenterX;
+    let newY = newCenterY;
+
+    // Keep text center within container bounds
+    const elementRect = currentDragElement.getBoundingClientRect();
+    const halfWidth = elementRect.width / 2;
+    const halfHeight = elementRect.height / 2;
+
+    newX = Math.max(halfWidth, Math.min(newX, container.offsetWidth - halfWidth));
+    newY = Math.max(halfHeight, Math.min(newY, container.offsetHeight - halfHeight));
+
+    currentDragElement.style.left = newX + 'px';
+    currentDragElement.style.top = newY + 'px';
+
+    // Update text properties with new position
+    const textId = currentDragElement.getAttribute('data-text-id');
+    textProperties[textId].x = newX;
+    textProperties[textId].y = newY;
+
+    // Preserve rotation and centering in transform
+    const rotation = textProperties[textId].rotation;
+    currentDragElement.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+
+    // Update gizmo position during drag if element is selected
+    if (selectedTexts.has(textId)) {
+        updateGizmoDuringDrag(currentDragElement);
+    }
+}
+
+function updateGizmoDuringDrag(element) {
+    const gizmo = document.getElementById('hoverGizmo');
+    const rect = element.getBoundingClientRect();
+    const container = document.getElementById('memeContainer');
+    const containerRect = container.getBoundingClientRect();
+
+    // Center the gizmo around the text element during drag
+    const centerX = rect.left + rect.width / 2 - containerRect.left;
+    const centerY = rect.top + rect.height / 2 - containerRect.top;
+
+    const gizmoWidth = rect.width + 20;
+    const gizmoHeight = rect.height + 20;
+
+    gizmo.style.left = (centerX - gizmoWidth / 2) + 'px';
+    gizmo.style.top = (centerY - gizmoHeight / 2) + 'px';
+    gizmo.style.width = gizmoWidth + 'px';
+    gizmo.style.height = gizmoHeight + 'px';
+    gizmo.style.display = 'block';
+}
+
+function stopDrag() {
+    if (isDragging && currentDragElement) {
+        currentDragElement.style.zIndex = 'auto';
+        // Hide gizmo when drag stops
+        hideHoverGizmo();
+    }
+    isDragging = false;
+    currentDragElement = null;
 }
 
 function adjustFontSize() {
-    const memeImage = document.getElementById('memeImage');
-    const topTextDiv = document.getElementById('topTextDiv');
-    const bottomTextDiv = document.getElementById('bottomTextDiv');
-
-    if (!memeImage || !topTextDiv || !bottomTextDiv) return;
-
-    // Get the actual rendered width of the image
-    const imageWidth = memeImage.getBoundingClientRect().width;
-
-    // Calculate font size based on image width (roughly 1/15th of image width)
-    const fontSize = Math.max(imageWidth / 15, 16);
-
-    // Apply the calculated font size and ensure text wraps within image width
-    const textStyle = {
-        fontSize: fontSize + 'px',
-        maxWidth: (imageWidth * 0.9) + 'px', // 90% of image width for padding
-        whiteSpace: 'normal',
-        wordWrap: 'break-word',
-        overflowWrap: 'break-word',
-        hyphens: 'auto'
-    };
-
-    Object.assign(topTextDiv.style, textStyle);
-    Object.assign(bottomTextDiv.style, textStyle);
+    // This function is no longer needed as we use the slider
+    setupDraggableText();
+    // Update text wrapping when image dimensions change
+    setTimeout(updateTextWrapping, 100);
 }
 
 // Download functionality
@@ -139,32 +456,77 @@ function downloadMeme() {
         // Draw image
         ctx.drawImage(img, 0, 0);
 
-        // Set up text styling
+        // Get text elements and their positions
+        const topTextDiv = document.getElementById('topTextDiv');
+        const bottomTextDiv = document.getElementById('bottomTextDiv');
+        const memeImage = document.getElementById('memeImage');
+        const container = document.getElementById('memeContainer');
+
         const topText = document.getElementById('topText').value.toUpperCase();
         const bottomText = document.getElementById('bottomText').value.toUpperCase();
 
-        const fontSize = Math.max(img.width / 15, 20);
-        ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = fontSize / 15;
-        ctx.textAlign = 'center';
-        ctx.letterSpacing = '1px';
+        // Calculate scale factor
+        const scaleX = img.width / memeImage.getBoundingClientRect().width;
+        const scaleY = img.height / memeImage.getBoundingClientRect().height;
 
-        // Draw top text
-        if (topText) {
-            const x = canvas.width / 2;
-            const y = fontSize + 20;
-            ctx.strokeText(topText, x, y);
-            ctx.fillText(topText, x, y);
+        ctx.textAlign = 'left';
+
+        // Draw top text at custom position with individual properties
+        if (topText && topTextDiv) {
+            const topProps = textProperties.topText;
+            const fontSize = topProps.fontSize * scaleX;
+
+            ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = fontSize / 15;
+
+            const topRect = topTextDiv.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const x = (topRect.left - containerRect.left) * scaleX;
+            const y = (topRect.top - containerRect.top + topProps.fontSize) * scaleY;
+
+            // Apply rotation
+            if (topProps.rotation !== 0) {
+                ctx.save();
+                ctx.translate(x + (fontSize * topText.length / 4), y - fontSize/2);
+                ctx.rotate((topProps.rotation * Math.PI) / 180);
+                ctx.strokeText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                ctx.fillText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                ctx.restore();
+            } else {
+                ctx.strokeText(topText, x, y);
+                ctx.fillText(topText, x, y);
+            }
         }
 
-        // Draw bottom text
-        if (bottomText) {
-            const x = canvas.width / 2;
-            const y = canvas.height - 20;
-            ctx.strokeText(bottomText, x, y);
-            ctx.fillText(bottomText, x, y);
+        // Draw bottom text at custom position with individual properties
+        if (bottomText && bottomTextDiv) {
+            const bottomProps = textProperties.bottomText;
+            const fontSize = bottomProps.fontSize * scaleX;
+
+            ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = fontSize / 15;
+
+            const bottomRect = bottomTextDiv.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const x = (bottomRect.left - containerRect.left) * scaleX;
+            const y = (bottomRect.top - containerRect.top + bottomProps.fontSize) * scaleY;
+
+            // Apply rotation
+            if (bottomProps.rotation !== 0) {
+                ctx.save();
+                ctx.translate(x + (fontSize * bottomText.length / 4), y - fontSize/2);
+                ctx.rotate((bottomProps.rotation * Math.PI) / 180);
+                ctx.strokeText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                ctx.fillText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                ctx.restore();
+            } else {
+                ctx.strokeText(bottomText, x, y);
+                ctx.fillText(bottomText, x, y);
+            }
         }
 
         // Draw watermark
@@ -210,31 +572,77 @@ async function shareMeme() {
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0);
 
-            // Add text and watermark (same as download function)
+            // Get text elements and their positions
+            const topTextDiv = document.getElementById('topTextDiv');
+            const bottomTextDiv = document.getElementById('bottomTextDiv');
+            const memeImage = document.getElementById('memeImage');
+            const container = document.getElementById('memeContainer');
+
             const topText = document.getElementById('topText').value.toUpperCase();
             const bottomText = document.getElementById('bottomText').value.toUpperCase();
 
-            const fontSize = Math.max(img.width / 15, 20);
-            ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = fontSize / 15;
-            ctx.textAlign = 'center';
+            // Calculate scale factor
+            const scaleX = img.width / memeImage.getBoundingClientRect().width;
+            const scaleY = img.height / memeImage.getBoundingClientRect().height;
 
-            // Draw top text
-            if (topText) {
-                const x = canvas.width / 2;
-                const y = fontSize + 20;
-                ctx.strokeText(topText, x, y);
-                ctx.fillText(topText, x, y);
+            ctx.textAlign = 'left';
+
+            // Draw top text at custom position with individual properties
+            if (topText && topTextDiv) {
+                const topProps = textProperties.topText;
+                const fontSize = topProps.fontSize * scaleX;
+
+                ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = fontSize / 15;
+
+                const topRect = topTextDiv.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const x = (topRect.left - containerRect.left) * scaleX;
+                const y = (topRect.top - containerRect.top + topProps.fontSize) * scaleY;
+
+                // Apply rotation
+                if (topProps.rotation !== 0) {
+                    ctx.save();
+                    ctx.translate(x + (fontSize * topText.length / 4), y - fontSize/2);
+                    ctx.rotate((topProps.rotation * Math.PI) / 180);
+                    ctx.strokeText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                    ctx.fillText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                    ctx.restore();
+                } else {
+                    ctx.strokeText(topText, x, y);
+                    ctx.fillText(topText, x, y);
+                }
             }
 
-            // Draw bottom text
-            if (bottomText) {
-                const x = canvas.width / 2;
-                const y = canvas.height - 20;
-                ctx.strokeText(bottomText, x, y);
-                ctx.fillText(bottomText, x, y);
+            // Draw bottom text at custom position with individual properties
+            if (bottomText && bottomTextDiv) {
+                const bottomProps = textProperties.bottomText;
+                const fontSize = bottomProps.fontSize * scaleX;
+
+                ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = fontSize / 15;
+
+                const bottomRect = bottomTextDiv.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const x = (bottomRect.left - containerRect.left) * scaleX;
+                const y = (bottomRect.top - containerRect.top + bottomProps.fontSize) * scaleY;
+
+                // Apply rotation
+                if (bottomProps.rotation !== 0) {
+                    ctx.save();
+                    ctx.translate(x + (fontSize * bottomText.length / 4), y - fontSize/2);
+                    ctx.rotate((bottomProps.rotation * Math.PI) / 180);
+                    ctx.strokeText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                    ctx.fillText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                    ctx.restore();
+                } else {
+                    ctx.strokeText(bottomText, x, y);
+                    ctx.fillText(bottomText, x, y);
+                }
             }
 
             // Draw watermark
