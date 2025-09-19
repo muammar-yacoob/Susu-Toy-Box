@@ -77,59 +77,96 @@ function formatGoogleDate(date) {
 // NASA API configuration
 const NASA_IMAGE_API_URL = 'https://images-api.nasa.gov/search';
 
+// Cache for astronaut data to prevent multiple API calls
+const astronautCache = new Map();
+
 async function getNasaAstronautImage(astronautName) {
+    // Check cache first
+    const cacheKey = `image_${astronautName}`;
+    if (astronautCache.has(cacheKey)) {
+        return astronautCache.get(cacheKey);
+    }
+
     try {
-        // Search NASA Image and Video Library for astronaut photos
+        // Search NASA Image and Video Library for astronaut photos (no API key needed for this endpoint)
         const searchQuery = encodeURIComponent(astronautName + ' astronaut portrait');
-        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2020`);
-        
+
+        // Add timeout for NASA API calls
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2020`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            throw new Error('NASA API request failed');
+            throw new Error(`NASA API request failed: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+        let imageUrl = null;
+
         if (data.collection && data.collection.items && data.collection.items.length > 0) {
             // Find the first image that looks like a portrait
-            const portraitItem = data.collection.items.find(item => 
-                item.links && item.links[0] && 
-                (item.data[0].description.toLowerCase().includes('portrait') || 
+            const portraitItem = data.collection.items.find(item =>
+                item.links && item.links[0] &&
+                (item.data[0].description.toLowerCase().includes('portrait') ||
                  item.data[0].description.toLowerCase().includes('astronaut'))
             );
-            
+
             if (portraitItem && portraitItem.links[0]) {
-                return portraitItem.links[0].href;
+                imageUrl = portraitItem.links[0].href;
+            } else if (data.collection.items[0].links[0]) {
+                // Fallback to first image
+                imageUrl = data.collection.items[0].links[0].href;
             }
-            
-            // Fallback to first image
-            return data.collection.items[0].links[0].href;
         }
-        
-        return null;
+
+        // Cache the result (even if null)
+        astronautCache.set(cacheKey, imageUrl);
+        return imageUrl;
     } catch (error) {
         console.warn('Failed to fetch NASA image for', astronautName, error);
+        // Cache the failed result to prevent retries
+        astronautCache.set(cacheKey, null);
         return null;
     }
 }
 
 async function getNasaAstronautData(astronautName) {
+    // Check cache first
+    const cacheKey = `data_${astronautName}`;
+    if (astronautCache.has(cacheKey)) {
+        return astronautCache.get(cacheKey);
+    }
+
     try {
         // Search NASA Image and Video Library for comprehensive astronaut data
         const searchQuery = encodeURIComponent(astronautName + ' astronaut');
-        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2010`);
-        
+
+        // Add timeout for NASA API calls
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2010`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            throw new Error('NASA API request failed');
+            throw new Error(`NASA API request failed: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+        let astronautData = null;
+
         if (data.collection && data.collection.items && data.collection.items.length > 0) {
             // Get the most relevant item (usually the first one)
             const item = data.collection.items[0];
             const itemData = item.data[0];
-            
-            return {
+
+            astronautData = {
                 title: itemData.title || '',
                 description: itemData.description || '',
                 keywords: itemData.keywords || [],
@@ -139,6 +176,7 @@ async function getNasaAstronautData(astronautName) {
                 location: itemData.location || '',
                 nasaId: itemData.nasa_id || '',
                 mediaType: itemData.media_type || 'image',
+                imageUrl: item.links[0].href || '',
                 additionalImages: data.collection.items.slice(1, 4).map(img => ({
                     title: img.data[0].title,
                     url: img.links[0].href,
@@ -146,10 +184,14 @@ async function getNasaAstronautData(astronautName) {
                 }))
             };
         }
-        
-        return null;
+
+        // Cache the result (even if null)
+        astronautCache.set(cacheKey, astronautData);
+        return astronautData;
     } catch (error) {
         console.warn('Failed to fetch NASA astronaut data for', astronautName, error);
+        // Cache the failed result to prevent retries
+        astronautCache.set(cacheKey, null);
         return null;
     }
 }
@@ -297,51 +339,158 @@ async function getSpaceInfo() {
     result.innerHTML = '<div class="loading loading-spinner"></div>';
 
     try {
-    const response = await fetch('https://api.open-notify.org/astros.json');
-    const data = await response.json();
-        
-        // Process astronauts with NASA images and store detailed data for modal
-        const astronautsWithDetails = await Promise.all(data.people.map(async (p) => {
-        const flag = getCountryFlag(p);
-            
-            // Try to get NASA image for this astronaut
-            let nasaImage = await getNasaAstronautImage(p.name);
-            
-            // Fallback to default astronaut icon if no NASA image found
-            if (!nasaImage) {
-                nasaImage = 'https://img.icons8.com/color/48/astronaut.png';
-            }
-            
-            // Get additional NASA data for modal
-            const nasaData = await getNasaAstronautData(p.name);
-            
-            return {
-                ...p,
-                nasaImage,
-                nasaData,
-                flag
-            };
-        }));
-        
+        // Try the main astronaut API with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        const response = await fetch('https://api.open-notify.org/astros.json', {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Process astronauts - load NASA data efficiently in background
+        const astronautsWithDetails = await Promise.all(
+            data.people.map(async (astronaut) => {
+                const flag = getCountryFlag(astronaut);
+
+                // Check if we already have cached data for this astronaut
+                const cacheKey = `complete_${astronaut.name}`;
+                if (astronautCache.has(cacheKey)) {
+                    return astronautCache.get(cacheKey);
+                }
+
+                // Create astronaut object with default image
+                const astronautObj = {
+                    ...astronaut,
+                    nasaImage: 'https://img.icons8.com/color/48/astronaut.png',
+                    nasaData: 'loading', // Mark as loading
+                    flag
+                };
+
+                // Load NASA data in background without blocking UI
+                setTimeout(async () => {
+                    try {
+                        const nasaData = await getNasaAstronautData(astronaut.name);
+                        if (nasaData && nasaData.imageUrl) {
+                            astronautObj.nasaImage = nasaData.imageUrl;
+                            // Update the image in the UI if still visible
+                            const imgElement = document.querySelector(`[data-astronaut="${astronaut.name}"] img`);
+                            if (imgElement) {
+                                imgElement.src = nasaData.imageUrl;
+                            }
+                        }
+                        astronautObj.nasaData = nasaData;
+                        // Cache the complete astronaut object
+                        astronautCache.set(cacheKey, astronautObj);
+                    } catch (error) {
+                        console.warn('Failed to load NASA data for', astronaut.name);
+                        astronautObj.nasaData = null;
+                        astronautCache.set(cacheKey, astronautObj);
+                    }
+                }, 100); // Small delay to render UI first
+
+                return astronautObj;
+            })
+        );
+
         const astronautsHtml = astronautsWithDetails.map(astronaut => {
             return getTemplate('astronautitem')
                 .replace(/{name}/g, astronaut.name)
                 .replace(/{craft}/g, astronaut.craft)
                 .replace('{flag}', astronaut.flag)
-                .replace('{nasaImage}', astronaut.nasaImage);
-    }).join('');
-        
+                .replace('{nasaImage}', astronaut.nasaImage)
+                .replace(/onclick="([^"]*)"/, `data-astronaut="${astronaut.name}" onclick="$1"`);
+        }).join('');
+
         result.innerHTML = getTemplate('astronauts').replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
-        
+
         // Store detailed astronaut data for modal use
         window.currentAstronauts = astronautsWithDetails;
-        
-        // Refresh particles to prevent stretching
-        refreshParticles();
-        
+
     } catch (error) {
         console.error('Error fetching space info:', error);
-        result.innerHTML = '<div class="error">Failed to load astronaut data. Please try again later. 🚀</div>';
+
+        // Fallback to demo data when API is unavailable
+        console.log('Using fallback astronaut data due to API issues');
+        const fallbackData = {
+            message: "success",
+            number: 7,
+            people: [
+                {name: "Oleg Kononenko", craft: "ISS"},
+                {name: "Nikolai Chub", craft: "ISS"},
+                {name: "Tracy C. Dyson", craft: "ISS"},
+                {name: "Butch Wilmore", craft: "ISS"},
+                {name: "Sunita Williams", craft: "ISS"},
+                {name: "Li Guangsu", craft: "Tiangong"},
+                {name: "Li Cong", craft: "Tiangong"}
+            ]
+        };
+
+        // Process fallback astronauts the same way
+        const astronautsWithDetails = await Promise.all(
+            fallbackData.people.map(async (astronaut) => {
+                const flag = getCountryFlag(astronaut);
+
+                // Check if we already have cached data for this astronaut
+                const cacheKey = `complete_${astronaut.name}`;
+                if (astronautCache.has(cacheKey)) {
+                    return astronautCache.get(cacheKey);
+                }
+
+                // Create astronaut object with default image
+                const astronautObj = {
+                    ...astronaut,
+                    nasaImage: 'https://img.icons8.com/color/48/astronaut.png',
+                    nasaData: 'loading', // Mark as loading
+                    flag
+                };
+
+                // Load NASA data in background without blocking UI
+                setTimeout(async () => {
+                    try {
+                        const nasaData = await getNasaAstronautData(astronaut.name);
+                        if (nasaData && nasaData.imageUrl) {
+                            astronautObj.nasaImage = nasaData.imageUrl;
+                            // Update the image in the UI if still visible
+                            const imgElement = document.querySelector(`[data-astronaut="${astronaut.name}"] img`);
+                            if (imgElement) {
+                                imgElement.src = nasaData.imageUrl;
+                            }
+                        }
+                        astronautObj.nasaData = nasaData;
+                        // Cache the complete astronaut object
+                        astronautCache.set(cacheKey, astronautObj);
+                    } catch (error) {
+                        console.warn('Failed to load NASA data for', astronaut.name);
+                        astronautObj.nasaData = null;
+                        astronautCache.set(cacheKey, astronautObj);
+                    }
+                }, 100); // Small delay to render UI first
+
+                return astronautObj;
+            })
+        );
+
+        const astronautsHtml = astronautsWithDetails.map(astronaut => {
+            return getTemplate('astronautitem')
+                .replace(/{name}/g, astronaut.name)
+                .replace(/{craft}/g, astronaut.craft)
+                .replace('{flag}', astronaut.flag)
+                .replace('{nasaImage}', astronaut.nasaImage)
+                .replace(/onclick="([^"]*)"/, `data-astronaut="${astronaut.name}" onclick="$1"`);
+        }).join('');
+
+        const fallbackNotice = '<div style="color: #ffa500; font-size: 12px; margin-bottom: 10px;">⚠️ Live data unavailable - showing cached astronaut information</div>';
+        result.innerHTML = fallbackNotice + getTemplate('astronauts').replace('{number}', fallbackData.number).replace('{astronauts}', astronautsHtml);
+
+        // Store detailed astronaut data for modal use
+        window.currentAstronauts = astronautsWithDetails;
     }
 }
 
@@ -352,9 +501,6 @@ function showPlanets() {
         return getTemplate('planetitem').replace('class="planet-item"', `class="${planetClass}"`).replace(/{name}/g, p.name).replace('{gif}', p.gif).replace('{fact}', p.fact).replace('{size}', p.size).replace('{gravity}', p.gravity).replace('{dayLength}', p.dayLength).replace('{temperature}', p.temperature);
     }).join('');
     result.innerHTML = getTemplate('planets').replace('{planets}', planetsHtml);
-    
-    // Refresh particles to prevent stretching
-    refreshParticles();
 }
 
 function showUpcomingEvents() {
@@ -402,9 +548,6 @@ function showUpcomingEvents() {
         return getTemplate('eventitem').replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description).replace(/{typeEncoded}/g, typeEncoded).replace(/{descriptionEncoded}/g, descriptionEncoded);
     }).join('') : '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
     result.innerHTML = getTemplate('events').replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
-    
-    // Refresh particles to prevent stretching
-    refreshParticles();
 }
 
 // Load modal template once on page load
@@ -426,7 +569,7 @@ function getAstronautModalTemplate() {
 }
 
 // Simple astronaut details message box
-function showAstronautDetails(name, craft, nasaImage) {
+async function showAstronautDetails(name, craft, nasaImage) {
     // Find astronaut in stored data
     const astronaut = window.currentAstronauts?.find(a => a.name === name) || {
         name,
@@ -435,12 +578,30 @@ function showAstronautDetails(name, craft, nasaImage) {
         nasaData: null
     };
 
-    // Use NASA image if provided, otherwise fallback to default
+    // Use cached NASA image if available, otherwise fallback
     const profileImage = astronaut.nasaImage || 'https://img.icons8.com/color/64/astronaut.png';
 
-    // Create NASA data section
+    // Use cached NASA data - no new API calls needed
     let nasaDataSection = '';
-    if (astronaut.nasaData) {
+    if (astronaut.nasaData === 'loading') {
+        // Still loading
+        nasaDataSection = `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #b0b0b0;">📸 Loading NASA archive data...</div>
+            </div>
+        `;
+
+        // Wait for data to load and update modal
+        const checkForData = setInterval(() => {
+            if (astronaut.nasaData !== 'loading') {
+                clearInterval(checkForData);
+                const modal = document.getElementById('astronautMessage');
+                if (modal) {
+                    updateAstronautModalContent(astronaut, profileImage);
+                }
+            }
+        }, 500);
+    } else if (astronaut.nasaData && astronaut.nasaData !== null) {
         const data = astronaut.nasaData;
         nasaDataSection = `
             <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
@@ -518,6 +679,43 @@ function closeAstronautMessage() {
     if (overlay) overlay.remove();
 }
 
+// Helper function to update modal content when NASA data loads
+function updateAstronautModalContent(astronaut, profileImage) {
+    let nasaDataSection = '';
+    if (astronaut.nasaData) {
+        const data = astronaut.nasaData;
+        nasaDataSection = `
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                <div style="font-size: 16px; color: #3498db; font-weight: bold; margin-bottom: 10px;">📸 NASA Archive Data</div>
+                ${data.title ? `<div style="font-size: 14px; color: #ffd700; margin-bottom: 8px;"><strong>Title:</strong> ${data.title}</div>` : ''}
+                ${data.description ? `<div style="font-size: 13px; color: #e0e0e0; margin-bottom: 8px; line-height: 1.4;"><strong>Description:</strong> ${data.description.substring(0, 200)}${data.description.length > 200 ? '...' : ''}</div>` : ''}
+                ${data.center ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>NASA Center:</strong> ${data.center}</div>` : ''}
+                ${data.location ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>Location:</strong> ${data.location}</div>` : ''}
+                ${data.dateCreated ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>Date:</strong> ${new Date(data.dateCreated).toLocaleDateString()}</div>` : ''}
+                ${data.nasaId ? `<div style="font-size: 12px; color: #888; margin-top: 8px;"><strong>NASA ID:</strong> ${data.nasaId}</div>` : ''}
+            </div>
+        `;
+    } else {
+        nasaDataSection = `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #b0b0b0;">📸 NASA archive data not available for this astronaut</div>
+            </div>
+        `;
+    }
+
+    const template = getAstronautModalTemplate();
+    const modalContent = template
+        .replace(/{name}/g, astronaut.name)
+        .replace(/{craft}/g, astronaut.craft)
+        .replace(/{photo}/g, profileImage)
+        .replace('{nasaDataSection}', nasaDataSection);
+
+    const modal = document.getElementById('astronautMessage');
+    if (modal) {
+        modal.innerHTML = modalContent;
+    }
+}
+
 
 // Astronaut icon animation functions
 function startAstronautSpin(element) {
@@ -561,8 +759,14 @@ async function showAPOD() {
     try {
         await loadTemplates();
 
-        // Get NASA APOD data (demo key allows 30 requests per hour)
-        const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY');
+        // Get NASA APOD data with timeout and fallback
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+        const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
         const data = await response.json();
 
         // Determine media type and create appropriate template
@@ -599,9 +803,6 @@ async function showAPOD() {
             .replace('{copyright}', copyrightText);
 
         result.innerHTML = apodHtml;
-        
-        // Refresh particles to prevent stretching
-        refreshParticles();
 
     } catch (error) {
         console.error('Error fetching APOD:', error);
@@ -644,15 +845,40 @@ function openImageFullscreen(imageUrl, title) {
 function initParticles() {
     particlesJS.load('background', 'nasa-particles.json', function() {
         console.log('Particles loaded successfully!');
-        
-        // Handle window resize to prevent stretching
-        window.addEventListener('resize', function() {
-            setTimeout(() => {
-                if (window.pJSDom && window.pJSDom[0]) {
-                    window.pJSDom[0].pJS.fn.particlesRefresh();
-                }
-            }, 100);
-        });
+
+        // Ensure canvas maintains proper aspect ratio
+        const canvas = document.querySelector('#background canvas');
+        if (canvas) {
+            // Force canvas to maintain proper dimensions and prevent stretching
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.objectFit = 'cover';
+            canvas.style.pointerEvents = 'none';
+
+            // Set actual canvas dimensions to match container
+            const container = document.getElementById('background');
+            if (container) {
+                const resizeCanvas = () => {
+                    canvas.width = container.offsetWidth;
+                    canvas.height = container.offsetHeight;
+                };
+                resizeCanvas();
+
+                // Handle window resize to prevent stretching
+                window.addEventListener('resize', function() {
+                    setTimeout(() => {
+                        resizeCanvas();
+                        if (window.pJSDom && window.pJSDom[0]) {
+                            // Refresh particles and ensure canvas sizing
+                            window.pJSDom[0].pJS.fn.particlesRefresh();
+                        }
+                    }, 100);
+                });
+            }
+        }
     });
 }
 
