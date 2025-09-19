@@ -1,6 +1,6 @@
 async function getPokemon() {
     const result = document.getElementById('result');
-    const button = document.querySelector('button');
+    const button = document.querySelector('button[onclick="getPokemon()"]');
 
     button.innerHTML = '<span class="loading loading-spinner"></span>';
     button.disabled = true;

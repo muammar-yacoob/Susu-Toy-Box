@@ -1,7 +1,7 @@
 async function getWeather() {
     const city = document.getElementById('city').value;
     const result = document.getElementById('result');
-    const button = document.querySelector('button');
+    const button = document.querySelector('button[onclick="getWeather()"]');
 
     button.innerHTML = '<span class="loading loading-spinner"></span>';
     button.disabled = true;

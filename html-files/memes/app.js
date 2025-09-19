@@ -19,24 +19,38 @@ async function initApp() {
 
 async function loadRandomImage() {
     const result = document.getElementById('result');
-    const button = document.querySelector('button');
+    const button = document.querySelector('button[onclick="loadRandomImage()"]');
 
-    button.innerHTML = '<span class="loading loading-spinner"></span>';
-    button.disabled = true;
+    try {
+        // Only modify button if it exists (avoid errors during initial load)
+        if (button) {
+            button.innerHTML = '<span class="loading loading-spinner"></span>';
+            button.disabled = true;
+        }
 
-    const response = await fetch('https://api.imgflip.com/get_memes');
-    const data = await response.json();
-    allMemes = data.data.memes;
-    currentMemeIndex = Math.floor(Math.random() * allMemes.length);
-    currentMeme = allMemes[currentMemeIndex].url;
+        const response = await fetch('https://api.imgflip.com/get_memes');
+        const data = await response.json();
+        allMemes = data.data.memes;
+        currentMemeIndex = Math.floor(Math.random() * allMemes.length);
+        currentMeme = allMemes[currentMemeIndex].url;
 
-    // Reset text positions to center when loading new image
-    resetTextPositions();
+        // Reset text positions to center when loading new image
+        resetTextPositions();
 
-    updateMemeDisplay();
+        updateMemeDisplay();
 
-    button.innerHTML = '🖼️ Random';
-    button.disabled = false;
+    } catch (error) {
+        console.error('Error loading random image:', error);
+        if (result) {
+            result.innerHTML = '<div class="alert alert-error">Failed to load meme. Please try again!</div>';
+        }
+    } finally {
+        // Always reset button state, even if there was an error
+        if (button) {
+            button.innerHTML = '🖼️ Random';
+            button.disabled = false;
+        }
+    }
 }
 
 function nextMeme() {
@@ -167,9 +181,11 @@ function updateMemeDisplay() {
         </div>
     `;
 
-    // Show action buttons when meme is displayed
+    // Show action buttons when meme is displayed (if element exists)
     const memeActions = document.getElementById('memeActions');
-    memeActions.style.display = 'flex';
+    if (memeActions) {
+        memeActions.style.display = 'flex';
+    }
 
     // Update text wrapping after image loads
     setTimeout(updateTextWrapping, 100);
