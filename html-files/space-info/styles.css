@@ -154,6 +154,11 @@ button:hover {
     to { opacity: 1; }
 }
 
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 /* Common text styles */
 .total, .section-title {
     font-size: clamp(18px, 3.5vw, 24px);

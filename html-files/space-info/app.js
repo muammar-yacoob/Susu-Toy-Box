@@ -33,7 +33,7 @@ async function loadTemplates() {
         // Fallback templates if loading fails
         templates = {
             astronauts: '<div class="total">People in Space Right Now: {number} 👨‍🚀</div><div class="astronauts-compact">{astronauts}</div><p style="margin-top: 20px;">Want to know more about space? Visit NASA\'s website! 🌟</p>',
-            astronautitem: '<div class="astronaut-compact" onclick="showAstronautDetails(\'{name}\', \'{craft}\')" style="cursor: pointer; transition: all 0.3s ease;" onmouseenter="this.style.transform=\'scale(1.02)\'; startAstronautSpin(this.querySelector(\'.astronaut-icon\'))" onmouseleave="this.style.transform=\'scale(1)\'; stopAstronautSpin(this.querySelector(\'.astronaut-icon\'))"><img src="https://img.icons8.com/color/48/astronaut.png" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease;"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>',
+             astronautitem: '<div class="astronaut-compact" onclick="showAstronautDetails(\'{name}\', \'{craft}\', \'{nasaImage}\')" style="cursor: pointer; transition: all 0.3s ease;" onmouseenter="this.style.transform=\'scale(1.02)\'; startAstronautSpin(this.querySelector(\'.astronaut-icon\'))" onmouseleave="this.style.transform=\'scale(1)\'; stopAstronautSpin(this.querySelector(\'.astronaut-icon\'))"><img src="{nasaImage}" alt="Astronaut" class="astronaut-icon" style="transition: all 0.3s ease; border-radius: 50%; width: 48px; height: 48px; object-fit: cover;" onerror="this.src=\'https://img.icons8.com/color/48/astronaut.png\'"><div class="astronaut-info"><div class="astronaut-name">{name}</div><div class="astronaut-craft">{craft}</div></div><img src="{flag}" alt="Country Flag" class="astronaut-flag"></div>',
             events: '<div class="section-title">☄️ Space Events Calendar! ☄️</div><div style="color: #b0b0b0; font-size: 12px; margin-bottom: 15px;">Today: {currentDate} (Year: {currentYear}, Month: {currentMonth})</div><div class="events-container">{events}</div><p style="margin-top: 20px; color: #ffd700;">Mark your calendar for these amazing space events! 🌟</p>',
             eventitem: '<div class="{eventClass}" data-type="{typeEncoded}" data-date="{googleDate}" data-description="{descriptionEncoded}" onclick="openCalendarEventData(this)" style="cursor: pointer;"><div class="event-type">{type}</div><div class="event-date">📅 {date}</div><div class="event-description">{description}</div></div>',
             planets: '<div class="section-title">🪐 Our Solar System (8 Planets + Pluto)! 🪐</div><div class="planets-container">{planets}</div><p style="margin-top: 20px; color: #ffd700; font-size: 14px;">Planet animations by <a href="https://graysea.tumblr.com/post/158035770070/the-solar-system-bonus-pluto" target="_blank" style="color: #3498db;">graysea</a> 🌟</p>',
@@ -72,6 +72,134 @@ function formatGoogleDate(date) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}${month}${day}`;
+}
+
+// NASA API configuration
+const NASA_IMAGE_API_URL = 'https://images-api.nasa.gov/search';
+
+async function getNasaAstronautImage(astronautName) {
+    try {
+        // Search NASA Image and Video Library for astronaut photos
+        const searchQuery = encodeURIComponent(astronautName + ' astronaut portrait');
+        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2020`);
+        
+        if (!response.ok) {
+            throw new Error('NASA API request failed');
+        }
+        
+        const data = await response.json();
+        
+        if (data.collection && data.collection.items && data.collection.items.length > 0) {
+            // Find the first image that looks like a portrait
+            const portraitItem = data.collection.items.find(item => 
+                item.links && item.links[0] && 
+                (item.data[0].description.toLowerCase().includes('portrait') || 
+                 item.data[0].description.toLowerCase().includes('astronaut'))
+            );
+            
+            if (portraitItem && portraitItem.links[0]) {
+                return portraitItem.links[0].href;
+            }
+            
+            // Fallback to first image
+            return data.collection.items[0].links[0].href;
+        }
+        
+        return null;
+    } catch (error) {
+        console.warn('Failed to fetch NASA image for', astronautName, error);
+        return null;
+    }
+}
+
+async function getNasaAstronautData(astronautName) {
+    try {
+        // Search NASA Image and Video Library for comprehensive astronaut data
+        const searchQuery = encodeURIComponent(astronautName + ' astronaut');
+        const response = await fetch(`${NASA_IMAGE_API_URL}?q=${searchQuery}&media_type=image&year_start=2010`);
+        
+        if (!response.ok) {
+            throw new Error('NASA API request failed');
+        }
+        
+        const data = await response.json();
+        
+        if (data.collection && data.collection.items && data.collection.items.length > 0) {
+            // Get the most relevant item (usually the first one)
+            const item = data.collection.items[0];
+            const itemData = item.data[0];
+            
+            return {
+                title: itemData.title || '',
+                description: itemData.description || '',
+                keywords: itemData.keywords || [],
+                dateCreated: itemData.date_created || '',
+                center: itemData.center || '',
+                photographer: itemData.photographer || '',
+                location: itemData.location || '',
+                nasaId: itemData.nasa_id || '',
+                mediaType: itemData.media_type || 'image',
+                additionalImages: data.collection.items.slice(1, 4).map(img => ({
+                    title: img.data[0].title,
+                    url: img.links[0].href,
+                    description: img.data[0].description
+                }))
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.warn('Failed to fetch NASA astronaut data for', astronautName, error);
+        return null;
+    }
+}
+
+function getCountryFlag(astronaut) {
+    const name = astronaut.name.toLowerCase();
+    const craft = astronaut.craft.toLowerCase();
+    
+    // Common astronaut countries and their flag codes
+    const countryFlags = {
+        'usa': 'https://img.icons8.com/color/32/usa.png',
+        'united states': 'https://img.icons8.com/color/32/usa.png',
+        'russia': 'https://img.icons8.com/color/32/russian-federation.png',
+        'russian': 'https://img.icons8.com/color/32/russian-federation.png',
+        'china': 'https://img.icons8.com/color/32/china.png',
+        'chinese': 'https://img.icons8.com/color/32/china.png',
+        'japan': 'https://img.icons8.com/color/32/japan.png',
+        'japanese': 'https://img.icons8.com/color/32/japan.png',
+        'europe': 'https://img.icons8.com/color/32/european-union.png',
+        'european': 'https://img.icons8.com/color/32/european-union.png',
+        'italy': 'https://img.icons8.com/color/32/italy.png',
+        'italian': 'https://img.icons8.com/color/32/italy.png',
+        'germany': 'https://img.icons8.com/color/32/germany.png',
+        'german': 'https://img.icons8.com/color/32/germany.png',
+        'france': 'https://img.icons8.com/color/32/france.png',
+        'french': 'https://img.icons8/color/32/france.png',
+        'canada': 'https://img.icons8.com/color/32/canada.png',
+        'canadian': 'https://img.icons8.com/color/32/canada.png',
+        'uk': 'https://img.icons8.com/color/32/great-britain.png',
+        'britain': 'https://img.icons8.com/color/32/great-britain.png',
+        'british': 'https://img.icons8.com/color/32/great-britain.png'
+    };
+    
+    // Check craft first (ISS, Tiangong, etc.)
+    if (craft.includes('iss') || craft.includes('international space station')) {
+        return countryFlags['usa']; // Default to USA for ISS
+    }
+    if (craft.includes('tiangong') || craft.includes('shenzhou')) {
+        return countryFlags['china'];
+    }
+    
+    // Check names for common patterns
+    for (const [country, flag] of Object.entries(countryFlags)) {
+        if (name.includes(country) || craft.includes(country)) {
+            return flag;
+        }
+    }
+    
+    // Default flag (Earth/International)
+    return 'https://img.icons8.com/color/32/earth-planet.png';
 }
 
 function getCountryFlagByNationality(nationality) {
@@ -169,93 +297,48 @@ async function getSpaceInfo() {
     result.innerHTML = '<div class="loading loading-spinner"></div>';
 
     try {
-        // Get current people in space
-        const currentResponse = await fetch('http://api.open-notify.org/astros.json');
-        const currentData = await currentResponse.json();
-
-        // Get detailed astronaut information from Launch Library API
-        const astronautsWithDetails = await Promise.all(
-            currentData.people.map(async (person) => {
-                try {
-                    // Search for astronaut by name in Launch Library API
-                    const searchResponse = await fetch(`https://ll.thespacedevs.com/2.2.0/astronaut/?search=${encodeURIComponent(person.name)}&limit=1`);
-                    const searchData = await searchResponse.json();
-
-                    // Check for API error (like rate limiting)
-                    if (searchData.detail && searchData.detail.includes('throttled')) {
-                        console.log(`API throttled for ${person.name} - using fallback nationality detection`);
-                        const fallbackNationality = getFallbackNationality(person.name, person.craft);
-                        return {
-                            ...person,
-                            nationality: fallbackNationality,
-                            profile_image: 'https://img.icons8.com/color/48/astronaut.png',
-                            bio: '',
-                            age: null,
-                            agency: ''
-                        };
-                    }
-
-                    if (searchData.results && searchData.results.length > 0) {
-                        const astronaut = searchData.results[0];
-                        console.log(`Found astronaut data for ${person.name}:`, astronaut);
-                        console.log(`Nationality: "${astronaut.nationality}"`);
-                        return {
-                            ...person,
-                            nationality: astronaut.nationality || 'Unknown',
-                            profile_image: astronaut.profile_image_thumbnail || astronaut.profile_image || 'https://img.icons8.com/color/48/astronaut.png',
-                            bio: astronaut.bio || '',
-                            age: astronaut.age || null,
-                            agency: astronaut.agency?.name || ''
-                        };
-                    } else {
-                        console.log(`No astronaut data found for ${person.name} - using fallback nationality detection`);
-                    }
-                    const fallbackNationality = getFallbackNationality(person.name, person.craft);
-                    return {
-                        ...person,
-                        nationality: fallbackNationality,
-                        profile_image: 'https://img.icons8.com/color/48/astronaut.png',
-                        bio: '',
-                        age: null,
-                        agency: ''
-                    };
-                } catch (error) {
-                    console.warn(`Failed to fetch details for ${person.name}:`, error);
-
-                    // Check if it's a rate limiting error
-                    if (error.message && error.message.includes('throttled')) {
-                        console.log('API rate limited - using fallback nationality detection');
-                    }
-
-                    const fallbackNationality = getFallbackNationality(person.name, person.craft);
-                    return {
-                        ...person,
-                        nationality: fallbackNationality,
-                        profile_image: 'https://img.icons8.com/color/48/astronaut.png',
-                        bio: '',
-                        age: null,
-                        agency: ''
-                    };
-                }
-            })
-        );
-
+    const response = await fetch('http://api.open-notify.org/astros.json');
+    const data = await response.json();
+        
+        // Process astronauts with NASA images and store detailed data for modal
+        const astronautsWithDetails = await Promise.all(data.people.map(async (p) => {
+        const flag = getCountryFlag(p);
+            
+            // Try to get NASA image for this astronaut
+            let nasaImage = await getNasaAstronautImage(p.name);
+            
+            // Fallback to default astronaut icon if no NASA image found
+            if (!nasaImage) {
+                nasaImage = 'https://img.icons8.com/color/48/astronaut.png';
+            }
+            
+            // Get additional NASA data for modal
+            const nasaData = await getNasaAstronautData(p.name);
+            
+            return {
+                ...p,
+                nasaImage,
+                nasaData,
+                flag
+            };
+        }));
+        
         const astronautsHtml = astronautsWithDetails.map(astronaut => {
-            const flag = getCountryFlagByNationality(astronaut.nationality);
             return getTemplate('astronautitem')
                 .replace(/{name}/g, astronaut.name)
                 .replace(/{craft}/g, astronaut.craft)
-                .replace('{flag}', flag);
-        }).join('');
-
-        result.innerHTML = getTemplate('astronauts').replace('{number}', currentData.number).replace('{astronauts}', astronautsHtml);
-
-        // Store astronaut details globally for modal use
+                .replace('{flag}', astronaut.flag)
+                .replace('{nasaImage}', astronaut.nasaImage);
+    }).join('');
+        
+        result.innerHTML = getTemplate('astronauts').replace('{number}', data.number).replace('{astronauts}', astronautsHtml);
+        
+        // Store detailed astronaut data for modal use
         window.currentAstronauts = astronautsWithDetails;
-
+        
     } catch (error) {
-        console.error('Failed to fetch astronaut data:', error);
-        result.innerHTML = '<div class="loading">Failed to load astronaut data. Please try again later.</div>';
+        console.error('Error fetching space info:', error);
+        result.innerHTML = '<div class="error">Failed to load astronaut data. Please try again later. 🚀</div>';
     }
 }
 
@@ -318,43 +401,66 @@ function showUpcomingEvents() {
 // Load modal template once on page load
 function getAstronautModalTemplate() {
     return `
-        <div style="text-align: center;">
-            <img src="{photo}" alt="{name}" style="width: 64px; height: 64px; border-radius: 50%; margin-bottom: 10px;">
-            <div style="font-size: 18px; font-weight: bold; color: #ffd700; margin-bottom: 8px;">{name}</div>
-            <div style="font-size: 14px; color: #e0e0e0; margin-bottom: 5px;">Nationality: {nationality}</div>
-            {ageSection}
-            <div style="font-size: 14px; color: #3498db; margin-bottom: 5px;">Mission: {craft}</div>
-            {agencySection}
+        <div style="text-align: center; max-width: 500px;">
+            <img src="{photo}" alt="{name}" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; border: 3px solid #3498db;" onerror="this.src='https://img.icons8.com/color/120/astronaut.png'">
+            <div style="font-size: 20px; font-weight: bold; color: #ffd700; margin-bottom: 10px;">{name}</div>
+            <div style="font-size: 16px; color: #3498db; margin-bottom: 15px;">🚀 Currently on: {craft}</div>
+            
+            {nasaDataSection}
+            
+            <div style="font-size: 14px; color: #b0b0b0; line-height: 1.5; margin-top: 15px;">
+                This brave explorer is currently living in space! 🌌<br>
+                They see 16 sunrises and sunsets every day from the ISS! ☀️🌙
+            </div>
         </div>
     `;
 }
 
 // Simple astronaut details message box
-function showAstronautDetails(name, craft) {
+function showAstronautDetails(name, craft, nasaImage) {
     // Find astronaut in stored data
     const astronaut = window.currentAstronauts?.find(a => a.name === name) || {
         name,
         craft,
-        nationality: 'Unknown',
-        profile_image: 'https://img.icons8.com/color/64/astronaut.png',
-        age: null,
-        agency: ''
+        nasaImage: nasaImage || 'https://img.icons8.com/color/64/astronaut.png',
+        nasaData: null
     };
+
+    // Use NASA image if provided, otherwise fallback to default
+    const profileImage = astronaut.nasaImage || 'https://img.icons8.com/color/64/astronaut.png';
+
+    // Create NASA data section
+    let nasaDataSection = '';
+    if (astronaut.nasaData) {
+        const data = astronaut.nasaData;
+        nasaDataSection = `
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                <div style="font-size: 16px; color: #3498db; font-weight: bold; margin-bottom: 10px;">📸 NASA Archive Data</div>
+                ${data.title ? `<div style="font-size: 14px; color: #ffd700; margin-bottom: 8px;"><strong>Title:</strong> ${data.title}</div>` : ''}
+                ${data.description ? `<div style="font-size: 13px; color: #e0e0e0; margin-bottom: 8px; line-height: 1.4;"><strong>Description:</strong> ${data.description.substring(0, 200)}${data.description.length > 200 ? '...' : ''}</div>` : ''}
+                ${data.center ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>NASA Center:</strong> ${data.center}</div>` : ''}
+                ${data.location ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>Location:</strong> ${data.location}</div>` : ''}
+                ${data.dateCreated ? `<div style="font-size: 13px; color: #b0b0b0; margin-bottom: 5px;"><strong>Date:</strong> ${new Date(data.dateCreated).toLocaleDateString()}</div>` : ''}
+                ${data.nasaId ? `<div style="font-size: 12px; color: #888; margin-top: 8px;"><strong>NASA ID:</strong> ${data.nasaId}</div>` : ''}
+            </div>
+        `;
+    } else {
+        nasaDataSection = `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #b0b0b0;">📸 NASA archive data not available for this astronaut</div>
+            </div>
+        `;
+    }
 
     // Load template and populate with data
     const template = getAstronautModalTemplate();
-    const ageSection = astronaut.age ? `<div style="font-size: 14px; color: #e0e0e0; margin-bottom: 5px;">Age: ${astronaut.age}</div>` : '';
-    const agencySection = astronaut.agency ? `<div style="font-size: 12px; color: #b0b0b0;">Agency: ${astronaut.agency}</div>` : '';
-
     const modalContent = template
         .replace(/{name}/g, astronaut.name)
-        .replace(/{nationality}/g, astronaut.nationality)
         .replace(/{craft}/g, astronaut.craft)
-        .replace(/{photo}/g, astronaut.profile_image)
-        .replace(/{ageSection}/g, ageSection)
-        .replace(/{agencySection}/g, agencySection);
+        .replace(/{photo}/g, profileImage)
+        .replace('{nasaDataSection}', nasaDataSection);
 
-    // Create small message box
+    // Create message box with larger size for more content
     const messageBox = document.createElement('div');
     messageBox.id = 'astronautMessage';
     messageBox.style.cssText = `
@@ -365,13 +471,15 @@ function showAstronautDetails(name, craft) {
         background: linear-gradient(135deg, #1a1a2e, #16213e);
         border: 2px solid #ffd700;
         border-radius: 15px;
-        padding: 20px;
+        padding: 25px;
         z-index: 1000;
         color: white;
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        max-width: 300px;
+        max-width: 600px;
         width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
     `;
 
     messageBox.innerHTML = modalContent;
