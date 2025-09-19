@@ -485,7 +485,7 @@ function downloadMeme() {
 
         ctx.textAlign = 'left';
 
-        // Draw top text at custom position with individual properties
+        // Draw top text exactly as displayed using DOM measurements
         if (topText && topTextDiv) {
             const topProps = textProperties.topText;
             const fontSize = topProps.fontSize * scaleX;
@@ -495,26 +495,40 @@ function downloadMeme() {
             ctx.strokeStyle = 'black';
             ctx.lineWidth = fontSize / 15;
 
-            const topRect = topTextDiv.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            const x = (topRect.left - containerRect.left) * scaleX;
-            const y = (topRect.top - containerRect.top + topProps.fontSize) * scaleY;
+            // Get the actual rendered text lines from the DOM
+            const computedStyle = window.getComputedStyle(topTextDiv);
+            const actualText = topTextDiv.textContent;
 
-            // Apply rotation
+            // Use a temporary canvas to measure text exactly as the browser renders it
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.font = ctx.font;
+
+            const containerRect = container.getBoundingClientRect();
+            const topRect = topTextDiv.getBoundingClientRect();
+
+            // Calculate exact position based on DOM element
+            const x = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
+            const y = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
+
             if (topProps.rotation !== 0) {
                 ctx.save();
-                ctx.translate(x + (fontSize * topText.length / 4), y - fontSize/2);
+                ctx.translate(x, y);
                 ctx.rotate((topProps.rotation * Math.PI) / 180);
-                ctx.strokeText(topText, -(fontSize * topText.length / 4), fontSize/2);
-                ctx.fillText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeText(actualText, 0, 0);
+                ctx.fillText(actualText, 0, 0);
                 ctx.restore();
             } else {
-                ctx.strokeText(topText, x, y);
-                ctx.fillText(topText, x, y);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeText(actualText, x, y);
+                ctx.fillText(actualText, x, y);
             }
         }
 
-        // Draw bottom text at custom position with individual properties
+        // Draw bottom text exactly as displayed using DOM measurements
         if (bottomText && bottomTextDiv) {
             const bottomProps = textProperties.bottomText;
             const fontSize = bottomProps.fontSize * scaleX;
@@ -524,22 +538,30 @@ function downloadMeme() {
             ctx.strokeStyle = 'black';
             ctx.lineWidth = fontSize / 15;
 
-            const bottomRect = bottomTextDiv.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            const x = (bottomRect.left - containerRect.left) * scaleX;
-            const y = (bottomRect.top - containerRect.top + bottomProps.fontSize) * scaleY;
+            // Get the actual rendered text from the DOM
+            const actualText = bottomTextDiv.textContent;
 
-            // Apply rotation
+            const containerRect = container.getBoundingClientRect();
+            const bottomRect = bottomTextDiv.getBoundingClientRect();
+
+            // Calculate exact position based on DOM element
+            const x = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
+            const y = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
+
             if (bottomProps.rotation !== 0) {
                 ctx.save();
-                ctx.translate(x + (fontSize * bottomText.length / 4), y - fontSize/2);
+                ctx.translate(x, y);
                 ctx.rotate((bottomProps.rotation * Math.PI) / 180);
-                ctx.strokeText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
-                ctx.fillText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeText(actualText, 0, 0);
+                ctx.fillText(actualText, 0, 0);
                 ctx.restore();
             } else {
-                ctx.strokeText(bottomText, x, y);
-                ctx.fillText(bottomText, x, y);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeText(actualText, x, y);
+                ctx.fillText(actualText, x, y);
             }
         }
 
@@ -604,7 +626,7 @@ async function shareMeme() {
 
             ctx.textAlign = 'left';
 
-            // Draw top text at custom position with individual properties
+            // Draw top text exactly as displayed using DOM measurements
             if (topText && topTextDiv) {
                 const topProps = textProperties.topText;
                 const fontSize = topProps.fontSize * scaleX;
@@ -614,26 +636,34 @@ async function shareMeme() {
                 ctx.strokeStyle = 'black';
                 ctx.lineWidth = fontSize / 15;
 
-                const topRect = topTextDiv.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                const x = (topRect.left - containerRect.left) * scaleX;
-                const y = (topRect.top - containerRect.top + topProps.fontSize) * scaleY;
+                // Get the actual rendered text from the DOM
+                const actualText = topTextDiv.textContent;
 
-                // Apply rotation
+                const containerRect = container.getBoundingClientRect();
+                const topRect = topTextDiv.getBoundingClientRect();
+
+                // Calculate exact position based on DOM element
+                const x = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
+                const y = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
+
                 if (topProps.rotation !== 0) {
                     ctx.save();
-                    ctx.translate(x + (fontSize * topText.length / 4), y - fontSize/2);
+                    ctx.translate(x, y);
                     ctx.rotate((topProps.rotation * Math.PI) / 180);
-                    ctx.strokeText(topText, -(fontSize * topText.length / 4), fontSize/2);
-                    ctx.fillText(topText, -(fontSize * topText.length / 4), fontSize/2);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.strokeText(actualText, 0, 0);
+                    ctx.fillText(actualText, 0, 0);
                     ctx.restore();
                 } else {
-                    ctx.strokeText(topText, x, y);
-                    ctx.fillText(topText, x, y);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.strokeText(actualText, x, y);
+                    ctx.fillText(actualText, x, y);
                 }
             }
 
-            // Draw bottom text at custom position with individual properties
+            // Draw bottom text exactly as displayed using DOM measurements
             if (bottomText && bottomTextDiv) {
                 const bottomProps = textProperties.bottomText;
                 const fontSize = bottomProps.fontSize * scaleX;
@@ -643,22 +673,30 @@ async function shareMeme() {
                 ctx.strokeStyle = 'black';
                 ctx.lineWidth = fontSize / 15;
 
-                const bottomRect = bottomTextDiv.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                const x = (bottomRect.left - containerRect.left) * scaleX;
-                const y = (bottomRect.top - containerRect.top + bottomProps.fontSize) * scaleY;
+                // Get the actual rendered text from the DOM
+                const actualText = bottomTextDiv.textContent;
 
-                // Apply rotation
+                const containerRect = container.getBoundingClientRect();
+                const bottomRect = bottomTextDiv.getBoundingClientRect();
+
+                // Calculate exact position based on DOM element
+                const x = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
+                const y = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
+
                 if (bottomProps.rotation !== 0) {
                     ctx.save();
-                    ctx.translate(x + (fontSize * bottomText.length / 4), y - fontSize/2);
+                    ctx.translate(x, y);
                     ctx.rotate((bottomProps.rotation * Math.PI) / 180);
-                    ctx.strokeText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
-                    ctx.fillText(bottomText, -(fontSize * bottomText.length / 4), fontSize/2);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.strokeText(actualText, 0, 0);
+                    ctx.fillText(actualText, 0, 0);
                     ctx.restore();
                 } else {
-                    ctx.strokeText(bottomText, x, y);
-                    ctx.fillText(bottomText, x, y);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.strokeText(actualText, x, y);
+                    ctx.fillText(actualText, x, y);
                 }
             }
 
