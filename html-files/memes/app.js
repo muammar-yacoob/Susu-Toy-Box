@@ -128,13 +128,13 @@ function updateMemeDisplay() {
     const bottomY = textProperties.bottomText.y || 'auto';
 
     result.innerHTML = `
-        <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl mx-auto" style="max-width: fit-content;">
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <button onclick="previousMeme()" class="btn btn-circle btn-ghost text-white hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
+            <button onclick="previousMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl" style="max-width: fit-content;">
                 <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; user-select: none;">
                     <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 100%; height: auto; max-width: 500px; max-height: 400px; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
                     <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
@@ -142,12 +142,12 @@ function updateMemeDisplay() {
                     <div id="hoverGizmo" style="display: none; position: absolute; border: 2px dashed #00ff00; background: rgba(0,255,0,0.1); pointer-events: none; z-index: 1001; border-radius: 4px;"></div>
                     <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px; display: none;">sundus.fun</div>
                 </div>
-                <button onclick="nextMeme()" class="btn btn-circle btn-ghost text-white hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
             </div>
+            <button onclick="nextMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
         </div>
     `;
 
@@ -228,15 +228,14 @@ function showHoverGizmo(e) {
     const container = document.getElementById('memeContainer');
     const containerRect = container.getBoundingClientRect();
 
-    // Center the gizmo around the text element
-    const centerX = rect.left + rect.width / 2 - containerRect.left;
-    const centerY = rect.top + rect.height / 2 - containerRect.top;
+    // Fit gizmo exactly to the text element without extra padding
+    const gizmoLeft = rect.left - containerRect.left;
+    const gizmoTop = rect.top - containerRect.top;
+    const gizmoWidth = rect.width;
+    const gizmoHeight = rect.height;
 
-    const gizmoWidth = rect.width + 20;
-    const gizmoHeight = rect.height + 20;
-
-    gizmo.style.left = (centerX - gizmoWidth / 2) + 'px';
-    gizmo.style.top = (centerY - gizmoHeight / 2) + 'px';
+    gizmo.style.left = gizmoLeft + 'px';
+    gizmo.style.top = gizmoTop + 'px';
     gizmo.style.width = gizmoWidth + 'px';
     gizmo.style.height = gizmoHeight + 'px';
     gizmo.style.display = 'block';
@@ -402,15 +401,14 @@ function updateGizmoDuringDrag(element) {
     const container = document.getElementById('memeContainer');
     const containerRect = container.getBoundingClientRect();
 
-    // Center the gizmo around the text element during drag
-    const centerX = rect.left + rect.width / 2 - containerRect.left;
-    const centerY = rect.top + rect.height / 2 - containerRect.top;
+    // Fit gizmo exactly to the text element during drag without extra padding
+    const gizmoLeft = rect.left - containerRect.left;
+    const gizmoTop = rect.top - containerRect.top;
+    const gizmoWidth = rect.width;
+    const gizmoHeight = rect.height;
 
-    const gizmoWidth = rect.width + 20;
-    const gizmoHeight = rect.height + 20;
-
-    gizmo.style.left = (centerX - gizmoWidth / 2) + 'px';
-    gizmo.style.top = (centerY - gizmoHeight / 2) + 'px';
+    gizmo.style.left = gizmoLeft + 'px';
+    gizmo.style.top = gizmoTop + 'px';
     gizmo.style.width = gizmoWidth + 'px';
     gizmo.style.height = gizmoHeight + 'px';
     gizmo.style.display = 'block';
@@ -529,16 +527,19 @@ function downloadMeme() {
             }
         }
 
-        // Draw watermark
+        // Draw watermark with drop shadow
         const watermarkFontSize = Math.max(canvas.width / 80, 8);
         ctx.font = `${watermarkFontSize}px Arial, sans-serif`;
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-        ctx.lineWidth = watermarkFontSize / 8;
         ctx.textAlign = 'right';
         const watermarkX = canvas.width - 10;
         const watermarkY = canvas.height - 8;
-        ctx.strokeText('sundus.fun', watermarkX, watermarkY);
+
+        // Draw shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillText('sundus.fun', watermarkX + 1, watermarkY + 1);
+
+        // Draw main text
+        ctx.fillStyle = 'white';
         ctx.fillText('sundus.fun', watermarkX, watermarkY);
 
         // Download the image
@@ -645,16 +646,19 @@ async function shareMeme() {
                 }
             }
 
-            // Draw watermark
+            // Draw watermark with drop shadow
             const watermarkFontSize = Math.max(canvas.width / 80, 8);
             ctx.font = `${watermarkFontSize}px Arial, sans-serif`;
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-            ctx.lineWidth = watermarkFontSize / 8;
             ctx.textAlign = 'right';
             const watermarkX = canvas.width - 10;
             const watermarkY = canvas.height - 8;
-            ctx.strokeText('sundus.fun', watermarkX, watermarkY);
+
+            // Draw shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillText('sundus.fun', watermarkX + 1, watermarkY + 1);
+
+            // Draw main text
+            ctx.fillStyle = 'white';
             ctx.fillText('sundus.fun', watermarkX, watermarkY);
 
             // Convert canvas to blob
