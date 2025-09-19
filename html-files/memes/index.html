@@ -17,18 +17,18 @@
                         <div class="bg-base-200 p-8 rounded-3xl shadow-xl max-w-lg w-full">
                             <div class="space-y-6">
                                 <!-- Text Inputs -->
-                                <div class="space-y-4">
-                                    <div class="form-control">
-                                        <label class="label justify-center">
-                                            <span class="label-text text-lg font-bold">Top Text</span>
-                                        </label>
-                                        <input id="topText" type="text" placeholder="WHEN YOU..." class="input input-bordered input-md w-full bg-base-100 focus:bg-white transition-colors text-center placeholder:text-center" value="WHEN YOU" onkeyup="updateMemeText()"/>
+                                <div class="form-control w-full space-y-6">
+                                    <div class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text text-lg font-bold mx-auto">Top Text</span>
+                                        </div>
+                                        <input id="topText" type="text" placeholder="WHEN YOU..." class="input input-bordered w-full text-center" value="WHEN YOU" onkeyup="updateMemeText()"/>
                                     </div>
-                                    <div class="form-control">
-                                        <label class="label justify-center">
-                                            <span class="label-text text-lg font-bold">Bottom Text</span>
-                                        </label>
-                                        <input id="bottomText" type="text" placeholder="FINISH HOMEWORK..." class="input input-bordered input-md w-full bg-base-100 focus:bg-white transition-colors text-center placeholder:text-center" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                                    <div class="form-control w-full">
+                                        <div class="label">
+                                            <span class="label-text text-lg font-bold mx-auto">Bottom Text</span>
+                                        </div>
+                                        <input id="bottomText" type="text" placeholder="FINISH HOMEWORK..." class="input input-bordered w-full text-center" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
                                     </div>
                                 </div>
 
@@ -36,18 +36,17 @@
                                 <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
 
                                 <!-- Action Buttons -->
-                                <div class="py-6">
-                                    <div class="flex justify-center gap-3 px-4 py-2">
-                                        <button onclick="loadRandomImage()" class="btn btn-primary btn-md px-6 py-3 hover:scale-105 transition-transform min-h-12">
-                                            🖼️ Random
-                                        </button>
-                                        <button onclick="document.getElementById('imageUpload').click()" class="btn btn-accent btn-md px-6 py-3 hover:scale-105 transition-transform min-h-12">
-                                            📤 Upload
-                                        </button>
-                                        <button onclick="loadRandomText()" class="btn btn-secondary btn-md px-6 py-3 hover:scale-105 transition-transform min-h-12">
-                                            🎲 Text
-                                        </button>
-                                    </div>
+                                <div class="divider"></div>
+                                <div class="btn-group btn-group-horizontal justify-center">
+                                    <button onclick="loadRandomImage()" class="btn btn-primary">
+                                        🖼️ Random
+                                    </button>
+                                    <button onclick="document.getElementById('imageUpload').click()" class="btn btn-accent">
+                                        📤 Upload
+                                    </button>
+                                    <button onclick="loadRandomText()" class="btn btn-secondary">
+                                        🎲 Text
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -58,11 +57,11 @@
 
                             <!-- Share and Save Buttons -->
                             <div class="w-full flex justify-center" id="memeActions" style="display: none;">
-                                <div class="flex justify-center gap-3 px-4 py-2">
-                                    <button id="shareBtn" onclick="shareMeme()" class="btn btn-info btn-md px-6 py-3 hover:scale-105 transition-transform min-h-12">
+                                <div class="flex gap-2">
+                                    <button id="shareBtn" onclick="shareMeme()" class="btn btn-info">
                                         📱 Share
                                     </button>
-                                    <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success btn-md px-6 py-3 hover:scale-105 transition-transform min-h-12">
+                                    <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success">
                                         📥 Save
                                     </button>
                                 </div>
