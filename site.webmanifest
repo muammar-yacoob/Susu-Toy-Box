@@ -1,6 +1,7 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Susu's Fun Code Playground",
+    "short_name": "Susu's Playground",
+    "description": "A collection of fun web apps and tools",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +14,11 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+    "start_url": "/",
+    "theme_color": "#fbbf24",
+    "background_color": "#1f2937",
+    "display": "standalone",
+    "orientation": "any",
+    "scope": "/",
+    "categories": ["entertainment", "utilities", "education"]
 }
