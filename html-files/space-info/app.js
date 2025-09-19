@@ -80,6 +80,42 @@ const NASA_IMAGE_API_URL = 'https://images-api.nasa.gov/search';
 // Cache for astronaut data to prevent multiple API calls
 const astronautCache = new Map();
 
+// Pre-populate cache with demo APOD data for when API is unavailable
+function initializeDemoCache() {
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // Add some demo APOD entries with working image URLs
+    const demoAPODs = [
+        {
+            date: today,
+            title: "The NGC 6914 Complex",
+            explanation: "This cosmic vista spans about 40 light-years through the nebula-rich constellation of Cygnus the Swan. In the center lies NGC 6914, a reflection nebula with striking red emission regions and intricate dark dust lanes. The interstellar clouds of gas and dust in this region are illuminated by the light of hot, young stars.",
+            media_type: "image",
+            url: "https://apod.nasa.gov/apod/image/2509/NGC6914_1024.jpg",
+            hdurl: "https://apod.nasa.gov/apod/image/2509/NGC6914_2048.jpg"
+        },
+        {
+            date: yesterdayStr,
+            title: "Saturn's Rings in Natural Color",
+            explanation: "What do Saturn's rings look like in natural color? The featured image shows Saturn's rings in the most accurate natural color reconstruction possible using images from the robotic Cassini spacecraft that orbited Saturn from 2004 to 2017. The colors are subtle and result from different types of ring particles reflecting sunlight differently.",
+            media_type: "image",
+            url: "https://apod.nasa.gov/apod/image/1710/saturn_cassini_960.jpg",
+            hdurl: "https://apod.nasa.gov/apod/image/1710/saturn_cassini_4800.jpg"
+        }
+    ];
+
+    demoAPODs.forEach(apod => {
+        const cacheKey = `apod_${apod.date}`;
+        if (!astronautCache.has(cacheKey)) {
+            astronautCache.set(cacheKey, apod);
+            console.log('Added demo APOD data for', apod.date);
+        }
+    });
+}
+
 async function getNasaAstronautImage(astronautName) {
     // Check cache first
     const cacheKey = `image_${astronautName}`;
@@ -413,6 +449,9 @@ async function getSpaceInfo() {
         // Store detailed astronaut data for modal use
         window.currentAstronauts = astronautsWithDetails;
 
+        // Refresh particles after content change
+        refreshParticles();
+
     } catch (error) {
         console.error('Error fetching space info:', error);
 
@@ -491,6 +530,9 @@ async function getSpaceInfo() {
 
         // Store detailed astronaut data for modal use
         window.currentAstronauts = astronautsWithDetails;
+
+        // Refresh particles after content change
+        refreshParticles();
     }
 }
 
@@ -501,6 +543,9 @@ function showPlanets() {
         return getTemplate('planetitem').replace('class="planet-item"', `class="${planetClass}"`).replace(/{name}/g, p.name).replace('{gif}', p.gif).replace('{fact}', p.fact).replace('{size}', p.size).replace('{gravity}', p.gravity).replace('{dayLength}', p.dayLength).replace('{temperature}', p.temperature);
     }).join('');
     result.innerHTML = getTemplate('planets').replace('{planets}', planetsHtml);
+
+    // Refresh particles after content change
+    refreshParticles();
 }
 
 function showUpcomingEvents() {
@@ -548,6 +593,9 @@ function showUpcomingEvents() {
         return getTemplate('eventitem').replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description).replace(/{typeEncoded}/g, typeEncoded).replace(/{descriptionEncoded}/g, descriptionEncoded);
     }).join('') : '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
     result.innerHTML = getTemplate('events').replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
+
+    // Refresh particles after content change
+    refreshParticles();
 }
 
 // Load modal template once on page load
@@ -759,15 +807,34 @@ async function showAPOD() {
     try {
         await loadTemplates();
 
-        // Get NASA APOD data with timeout and fallback
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+        // Check cache first for today's APOD
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+        const cacheKey = `apod_${today}`;
 
-        const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', {
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        const data = await response.json();
+        let data;
+        if (astronautCache.has(cacheKey)) {
+            console.log('Using cached APOD data for', today);
+            data = astronautCache.get(cacheKey);
+        } else {
+            // Get NASA APOD data with timeout and fallback
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+            const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`NASA APOD API failed: ${response.status}`);
+            }
+
+            data = await response.json();
+
+            // Cache the result for 24 hours
+            astronautCache.set(cacheKey, data);
+            console.log('Cached APOD data for', today);
+        }
 
         // Determine media type and create appropriate template
         let mediaTemplate = '';
@@ -775,7 +842,7 @@ async function showAPOD() {
             mediaTemplate = getTemplate('apodimage')
                 .replace('{url}', data.url || '')
                 .replace('{hdurl}', data.hdurl || data.url || '')
-                .replace('{title}', data.title || '');
+                .replace(/\{title\}/g, data.title || '');
         } else if (data.media_type === 'video') {
             mediaTemplate = getTemplate('apodvideo')
                 .replace('{url}', data.url || '');
@@ -804,23 +871,104 @@ async function showAPOD() {
 
         result.innerHTML = apodHtml;
 
+        // Refresh particles after content change
+        refreshParticles();
+
     } catch (error) {
         console.error('Error fetching APOD:', error);
-        result.innerHTML = `
-            <div class="section-title">🌌 NASA Photo of the Day 🌌</div>
-            <div class="apod-container">
-                <div class="apod-item">
-                    <div class="apod-title">Service Temporarily Unavailable</div>
-                    <div class="apod-explanation">
-                        Sorry, we couldn't load today's astronomy picture. This could be due to:
-                        <br>• NASA API rate limits
-                        <br>• Network connectivity issues
-                        <br>• Service maintenance
-                        <br><br>Please try again in a few minutes! 🚀
-                    </div>
-                </div>
-            </div>
-        `;
+
+        // Check if we have any cached APOD data from previous days
+        const today = new Date().toISOString().split('T')[0];
+        let fallbackData = null;
+
+        // Look for recent cached APOD data (within last 7 days)
+        for (let i = 1; i <= 7; i++) {
+            const pastDate = new Date();
+            pastDate.setDate(pastDate.getDate() - i);
+            const pastDateStr = pastDate.toISOString().split('T')[0];
+            const pastCacheKey = `apod_${pastDateStr}`;
+
+            if (astronautCache.has(pastCacheKey)) {
+                fallbackData = astronautCache.get(pastCacheKey);
+                console.log('Using fallback APOD data from', pastDateStr);
+                break;
+            }
+        }
+
+        if (fallbackData) {
+            // Use cached data with a fallback notice
+            let mediaTemplate = '';
+            if (fallbackData.media_type === 'image') {
+                mediaTemplate = getTemplate('apodimage')
+                    .replace('{url}', fallbackData.url || '')
+                    .replace('{hdurl}', fallbackData.hdurl || fallbackData.url || '')
+                    .replace(/\{title\}/g, fallbackData.title || '');
+            } else if (fallbackData.media_type === 'video') {
+                mediaTemplate = getTemplate('apodvideo')
+                    .replace('{url}', fallbackData.url || '');
+            }
+
+            const dateObj = new Date(fallbackData.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const copyrightText = fallbackData.copyright ?
+                `© ${fallbackData.copyright}` :
+                'Image Credit: NASA';
+
+            const fallbackNotice = '<div style="color: #ffa500; font-size: 12px; margin-bottom: 10px;">⚠️ Live APOD unavailable - showing recent cached content</div>';
+
+            const apodHtml = fallbackNotice + getTemplate('apod')
+                .replace('{title}', fallbackData.title || 'NASA Astronomy Picture of the Day')
+                .replace('{date}', formattedDate)
+                .replace('{media}', mediaTemplate)
+                .replace('{explanation}', fallbackData.explanation || 'No description available.')
+                .replace('{copyright}', copyrightText);
+
+            result.innerHTML = apodHtml;
+        } else {
+            // No cached data available, use demo APOD data
+            console.log('Using demo APOD data as final fallback');
+            const demoApodData = {
+                title: "The Orion Nebula in Stars, Dust, and Gas",
+                date: "2024-01-15",
+                explanation: "Few cosmic vistas excite the imagination like the Orion Nebula, an immense stellar nursery some 1,500 light-years away. This stunning false-color view spans about 40 light-years across the region, constructed using infrared data from the Spitzer Space Telescope. Compared to its visual wavelength appearance, the infrared image shows warmer dust clouds that glow at infrared wavelengths, along with many stellar nurseries where new stars are born.",
+                media_type: "image",
+                url: "https://apod.nasa.gov/apod/image/1312/orion_hubble_960.jpg",
+                hdurl: "https://apod.nasa.gov/apod/image/1312/orion_hubble_6000.jpg"
+            };
+
+            const mediaTemplate = getTemplate('apodimage')
+                .replace('{url}', demoApodData.url)
+                .replace('{hdurl}', demoApodData.hdurl)
+                .replace(/\{title\}/g, demoApodData.title);
+
+            const dateObj = new Date(demoApodData.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const fallbackNotice = '<div style="color: #ffa500; font-size: 12px; margin-bottom: 10px;">⚠️ NASA API unavailable - showing demo space content</div>';
+
+            const apodHtml = fallbackNotice + getTemplate('apod')
+                .replace('{title}', demoApodData.title)
+                .replace('{date}', formattedDate)
+                .replace('{media}', mediaTemplate)
+                .replace('{explanation}', demoApodData.explanation)
+                .replace('{copyright}', 'Image Credit: NASA/ESA Hubble Space Telescope');
+
+            result.innerHTML = apodHtml;
+        }
+
+        // Refresh particles after content change
+        refreshParticles();
     }
 }
 
@@ -868,15 +1016,48 @@ function initParticles() {
                 resizeCanvas();
 
                 // Handle window resize to prevent stretching
-                window.addEventListener('resize', function() {
+                const resizeHandler = function() {
                     setTimeout(() => {
-                        resizeCanvas();
-                        if (window.pJSDom && window.pJSDom[0]) {
-                            // Refresh particles and ensure canvas sizing
-                            window.pJSDom[0].pJS.fn.particlesRefresh();
+                        try {
+                            resizeCanvas();
+                            if (window.pJSDom && window.pJSDom[0] && window.pJSDom[0].pJS) {
+                                // Update particle system dimensions
+                                if (window.pJSDom[0].pJS.canvas && window.pJSDom[0].pJS.canvas.size) {
+                                    window.pJSDom[0].pJS.canvas.size.height = container.offsetHeight;
+                                    window.pJSDom[0].pJS.canvas.size.width = container.offsetWidth;
+                                }
+                                if (window.pJSDom[0].pJS.fn && window.pJSDom[0].pJS.fn.particlesRefresh) {
+                                    window.pJSDom[0].pJS.fn.particlesRefresh();
+                                }
+                            }
+                        } catch (error) {
+                            console.warn('Failed to handle resize for particles:', error);
                         }
                     }, 100);
+                };
+
+                window.addEventListener('resize', resizeHandler);
+
+                // Also listen for content changes using MutationObserver
+                const observer = new MutationObserver(function(mutations) {
+                    let shouldRefresh = false;
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList' && mutation.target.id === 'spaceResult') {
+                            shouldRefresh = true;
+                        }
+                    });
+                    if (shouldRefresh) {
+                        setTimeout(() => refreshParticles(), 200);
+                    }
                 });
+
+                const spaceResult = document.getElementById('spaceResult');
+                if (spaceResult) {
+                    observer.observe(spaceResult, {
+                        childList: true,
+                        subtree: true
+                    });
+                }
             }
         }
     });
@@ -885,14 +1066,65 @@ function initParticles() {
 // Refresh particles to prevent stretching during content changes
 function refreshParticles() {
     setTimeout(() => {
-        if (window.pJSDom && window.pJSDom[0]) {
-            // Refresh the particles system
-            window.pJSDom[0].pJS.fn.particlesRefresh();
+        try {
+            if (window.pJSDom && window.pJSDom[0] && window.pJSDom[0].pJS) {
+                const canvas = document.querySelector('#background canvas');
+                const container = document.getElementById('background');
+
+                if (canvas && container) {
+                    // Force container to recalculate its layout
+                    container.style.height = 'auto';
+                    container.style.minHeight = '100vh';
+
+                    // Wait for layout to settle
+                    setTimeout(() => {
+                        const newWidth = container.offsetWidth;
+                        const newHeight = Math.max(container.offsetHeight, window.innerHeight);
+
+                        // Update canvas actual dimensions
+                        canvas.width = newWidth;
+                        canvas.height = newHeight;
+
+                        // Update canvas style dimensions with proper scaling
+                        canvas.style.width = '100%';
+                        canvas.style.height = '100%';
+                        canvas.style.position = 'absolute';
+                        canvas.style.top = '0';
+                        canvas.style.left = '0';
+                        canvas.style.transform = 'scale(1)'; // Prevent any scaling
+                        canvas.style.transformOrigin = 'top left';
+
+                        // Refresh the particles system with new dimensions
+                        if (window.pJSDom[0].pJS.canvas && window.pJSDom[0].pJS.canvas.size) {
+                            window.pJSDom[0].pJS.canvas.size.height = newHeight;
+                            window.pJSDom[0].pJS.canvas.size.width = newWidth;
+                        }
+
+                        // Force particles to redistribute
+                        if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+                            window.pJSDom[0].pJS.particles.array.forEach(particle => {
+                                if (particle.x > newWidth) particle.x = Math.random() * newWidth;
+                                if (particle.y > newHeight) particle.y = Math.random() * newHeight;
+                            });
+                        }
+
+                        if (window.pJSDom[0].pJS.fn && window.pJSDom[0].pJS.fn.particlesRefresh) {
+                            window.pJSDom[0].pJS.fn.particlesRefresh();
+                        }
+
+                        console.log('Particles refreshed for new dimensions:', newWidth, 'x', newHeight);
+                    }, 50);
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to refresh particles:', error);
         }
-    }, 50);
+    }, 200); // Longer delay to allow content to fully render
 }
 
 async function initApp() {
+    // Initialize demo cache first
+    initializeDemoCache();
     await loadTemplates();
     getSpaceInfo();
 }
