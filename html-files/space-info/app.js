@@ -336,6 +336,9 @@ async function getSpaceInfo() {
         // Store detailed astronaut data for modal use
         window.currentAstronauts = astronautsWithDetails;
         
+        // Refresh particles to prevent stretching
+        refreshParticles();
+        
     } catch (error) {
         console.error('Error fetching space info:', error);
         result.innerHTML = '<div class="error">Failed to load astronaut data. Please try again later. 🚀</div>';
@@ -349,6 +352,9 @@ function showPlanets() {
         return getTemplate('planetitem').replace('class="planet-item"', `class="${planetClass}"`).replace(/{name}/g, p.name).replace('{gif}', p.gif).replace('{fact}', p.fact).replace('{size}', p.size).replace('{gravity}', p.gravity).replace('{dayLength}', p.dayLength).replace('{temperature}', p.temperature);
     }).join('');
     result.innerHTML = getTemplate('planets').replace('{planets}', planetsHtml);
+    
+    // Refresh particles to prevent stretching
+    refreshParticles();
 }
 
 function showUpcomingEvents() {
@@ -396,6 +402,9 @@ function showUpcomingEvents() {
         return getTemplate('eventitem').replace(/{eventClass}/g, eventClass).replace(/{type}/g, e.type).replace(/{date}/g, e.date).replace(/{googleDate}/g, e.googleDate).replace(/{description}/g, e.description).replace(/{typeEncoded}/g, typeEncoded).replace(/{descriptionEncoded}/g, descriptionEncoded);
     }).join('') : '<div class="event-item"><div class="event-description">No upcoming events found. Check back later for new space events! 🌟</div></div>';
     result.innerHTML = getTemplate('events').replace('{currentDate}', currentDate).replace('{currentYear}', currentYear).replace('{currentMonth}', currentMonth).replace('{events}', eventsHtml);
+    
+    // Refresh particles to prevent stretching
+    refreshParticles();
 }
 
 // Load modal template once on page load
@@ -590,6 +599,9 @@ async function showAPOD() {
             .replace('{copyright}', copyrightText);
 
         result.innerHTML = apodHtml;
+        
+        // Refresh particles to prevent stretching
+        refreshParticles();
 
     } catch (error) {
         console.error('Error fetching APOD:', error);
@@ -626,6 +638,32 @@ function openImageFullscreen(imageUrl, title) {
 
     modal.appendChild(img);
     document.body.appendChild(modal);
+}
+
+// Initialize particles with proper canvas handling
+function initParticles() {
+    particlesJS.load('background', 'nasa-particles.json', function() {
+        console.log('Particles loaded successfully!');
+        
+        // Handle window resize to prevent stretching
+        window.addEventListener('resize', function() {
+            setTimeout(() => {
+                if (window.pJSDom && window.pJSDom[0]) {
+                    window.pJSDom[0].pJS.fn.particlesRefresh();
+                }
+            }, 100);
+        });
+    });
+}
+
+// Refresh particles to prevent stretching during content changes
+function refreshParticles() {
+    setTimeout(() => {
+        if (window.pJSDom && window.pJSDom[0]) {
+            // Refresh the particles system
+            window.pJSDom[0].pJS.fn.particlesRefresh();
+        }
+    }, 50);
 }
 
 async function initApp() {

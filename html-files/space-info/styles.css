@@ -1,4 +1,18 @@
 /* Space Info app styles */
+#background {
+    position: relative;
+}
+
+#background canvas {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1;
+    pointer-events: none;
+}
+
 #background .container {
     background: #2d2d2d;
     border-radius: 20px;
@@ -9,6 +23,8 @@
     border: 1px solid #404040;
     color: white;
     text-align: center;
+    position: relative;
+    z-index: 2;
 }
 
 .button-section {
@@ -188,6 +204,14 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    background: rgba(255,255,255,0.12);
+    border-color: #3498db;
 }
 
 .event-item.best-season {
@@ -196,6 +220,14 @@ button:hover {
     box-shadow: 0 8px 20px rgba(255,215,0,0.4);
     transform: scale(1.02);
     z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.event-item.best-season:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 12px 30px rgba(255,215,0,0.6);
+    background: rgba(255,215,0,0.3);
+    border-color: #ff6b35;
 }
 
 .event-item.best-season::before {
