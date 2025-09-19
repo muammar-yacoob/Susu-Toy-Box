@@ -64,8 +64,8 @@ button:hover {
 /* Astronaut styles */
 .astronauts-compact {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
     margin: 15px 0;
 }
 
@@ -470,17 +470,47 @@ button:hover {
 }
 
 /* Responsive design */
+
+/* Tablet and small desktop */
+@media (max-width: 1024px) {
+    .astronauts-compact {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Small tablet */
 @media (max-width: 768px) {
     body { padding: 20px; }
     .container { padding: 20px; }
     .button-section { flex-direction: column; align-items: center; }
     button { width: 100%; max-width: 300px; }
     .planets-container { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-    .astronauts-compact { grid-template-columns: 1fr; gap: 8px; }
+    .astronauts-compact { 
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+        gap: 10px; 
+    }
     .astronaut-compact { padding: 10px; }
     .astronaut-icon { width: 35px; height: 35px; }
     .astronaut-name { font-size: 13px; }
     .astronaut-craft { font-size: 11px; }
     .apod-item { padding: 20px; }
     .apod-video { height: 250px; }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+    .container { padding: 15px; }
+    .astronauts-compact { 
+        grid-template-columns: 1fr; 
+        gap: 8px; 
+    }
+    .astronaut-compact { 
+        padding: 8px; 
+        gap: 8px;
+    }
+    .astronaut-icon { width: 32px; height: 32px; }
+    .astronaut-name { font-size: 12px; }
+    .astronaut-craft { font-size: 10px; }
+    .astronaut-flag { width: 20px; height: 20px; }
 }
