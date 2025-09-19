@@ -9,7 +9,11 @@ async function getCat() {
     const data = await response.json();
 
     result.innerHTML = `
-        <img src="${data[0].url}" alt="Random Cat" width="250" class="rounded-lg mx-auto"/>
+        <div class="flex flex-col items-center justify-center space-y-4">
+            <div class="relative">
+                <img src="${data[0].url}" alt="Random Cat" class="max-w-80 max-h-80 w-auto h-auto rounded-lg shadow-lg"/>
+            </div>
+        </div>
     `;
 
     button.innerHTML = 'Get Random Cat!';
