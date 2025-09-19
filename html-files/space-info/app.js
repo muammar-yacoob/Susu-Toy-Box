@@ -297,7 +297,7 @@ async function getSpaceInfo() {
     result.innerHTML = '<div class="loading loading-spinner"></div>';
 
     try {
-    const response = await fetch('http://api.open-notify.org/astros.json');
+    const response = await fetch('https://api.open-notify.org/astros.json');
     const data = await response.json();
         
         // Process astronauts with NASA images and store detailed data for modal
