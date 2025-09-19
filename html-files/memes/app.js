@@ -5,8 +5,8 @@ let currentMemeIndex = 0;
 let allMemes = [];
 let selectedTexts = new Set(['topText', 'bottomText']); // Both selected by default
 let textProperties = {
-    topText: { fontSize: 50, rotation: 0, x: null, y: null },
-    bottomText: { fontSize: 50, rotation: 0, x: null, y: null }
+    topText: { fontSize: 30, rotation: 0, x: null, y: null },
+    bottomText: { fontSize: 30, rotation: 0, x: null, y: null }
 };
 
 async function initApp() {
@@ -126,17 +126,17 @@ function resetTextPositions() {
     // Reset all text properties to defaults
     textProperties.topText.x = null;
     textProperties.topText.y = null;
-    textProperties.topText.fontSize = 50;
+    textProperties.topText.fontSize = 30;
     textProperties.topText.rotation = 0;
     textProperties.bottomText.x = null;
     textProperties.bottomText.y = null;
-    textProperties.bottomText.fontSize = 50;
+    textProperties.bottomText.fontSize = 30;
     textProperties.bottomText.rotation = 0;
 
     // Update UI sliders to reflect the reset values
-    document.getElementById('fontSizeSlider').value = 50;
+    document.getElementById('fontSizeSlider').value = 30;
     document.getElementById('rotationSlider').value = 0;
-    updateSliderDisplay('fontSize', 50);
+    updateSliderDisplay('fontSize', 30);
     updateSliderDisplay('rotation', 0);
 }
 
@@ -158,13 +158,16 @@ function updateMemeDisplay() {
     const bottomY = textProperties.bottomText.y || 'auto';
 
     result.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 800px; margin: 0 auto;">
+        <!-- Navigation and Image Container with padding -->
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin: 20px 0;">
             <button onclick="previousMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" style="flex-shrink: 0;" ${allMemes.length === 0 ? 'disabled' : ''}>
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </button>
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl" style="max-width: fit-content; margin: 0 20px;">
+            
+            <!-- Image with padding above and below -->
+            <div style="padding: 20px; display: flex; justify-content: center; align-items: center;">
                 <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; user-select: none;">
                     <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 400px; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
                     <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
@@ -173,11 +176,19 @@ function updateMemeDisplay() {
                     <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px; display: none;">sundus.fun</div>
                 </div>
             </div>
+            
             <button onclick="nextMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" style="flex-shrink: 0;" ${allMemes.length === 0 ? 'disabled' : ''}>
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
+        </div>
+        
+        <!-- Action Buttons inside the same container -->
+        <div class="divider"></div>
+        <div class="flex items-center justify-center gap-2">
+            <button id="shareBtn" onclick="shareMeme()" class="btn btn-info btn-sm">📱 Share</button>
+            <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success btn-sm">📥 Save</button>
         </div>
     `;
 
@@ -256,21 +267,41 @@ function showHoverGizmo(e) {
     if (!selectedTexts.has(textId)) return; // Only show for selected text
 
     const gizmo = document.getElementById('hoverGizmo');
-    const rect = e.target.getBoundingClientRect();
+    const textElement = e.target;
     const container = document.getElementById('memeContainer');
+
+    // Force a reflow to ensure accurate positioning
+    textElement.offsetHeight;
+
     const containerRect = container.getBoundingClientRect();
+    const rect = textElement.getBoundingClientRect();
 
-    // Fit gizmo exactly to the text element without extra padding
-    const gizmoLeft = rect.left - containerRect.left;
-    const gizmoTop = rect.top - containerRect.top;
-    const gizmoWidth = rect.width;
-    const gizmoHeight = rect.height;
+    // Ensure we're getting the actual rendered dimensions
+    const computedStyle = window.getComputedStyle(textElement);
+    const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+    const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+    const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+    const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
 
-    gizmo.style.left = gizmoLeft + 'px';
-    gizmo.style.top = gizmoTop + 'px';
-    gizmo.style.width = gizmoWidth + 'px';
-    gizmo.style.height = gizmoHeight + 'px';
+    // Calculate the actual text content area
+    const actualWidth = Math.max(10, rect.width - paddingLeft - paddingRight);
+    const actualHeight = Math.max(10, rect.height - paddingTop - paddingBottom);
+
+    // Position gizmo relative to container, accounting for padding
+    const relativeLeft = rect.left - containerRect.left + paddingLeft;
+    const relativeTop = rect.top - containerRect.top + paddingTop;
+
+    // Clamp values to prevent negative positioning or overflow
+    const clampedLeft = Math.max(0, Math.min(relativeLeft, container.offsetWidth - actualWidth));
+    const clampedTop = Math.max(0, Math.min(relativeTop, container.offsetHeight - actualHeight));
+
+    // Apply gizmo positioning with bounds checking
+    gizmo.style.left = clampedLeft + 'px';
+    gizmo.style.top = clampedTop + 'px';
+    gizmo.style.width = actualWidth + 'px';
+    gizmo.style.height = actualHeight + 'px';
     gizmo.style.display = 'block';
+
 }
 
 function hideHoverGizmo() {
@@ -349,7 +380,7 @@ function updateSliderDisplays() {
 }
 
 function resetFontSize() {
-    const defaultFontSize = 50;
+    const defaultFontSize = 30;
     document.getElementById('fontSizeSlider').value = defaultFontSize;
     updateSelectedTextProperty('fontSize', defaultFontSize);
     updateSliderDisplay('fontSize', defaultFontSize);
@@ -429,20 +460,29 @@ function drag(e) {
 
 function updateGizmoDuringDrag(element) {
     const gizmo = document.getElementById('hoverGizmo');
-    const rect = element.getBoundingClientRect();
     const container = document.getElementById('memeContainer');
     const containerRect = container.getBoundingClientRect();
+    
+    // Get text element's actual content dimensions (excluding padding)
+    const rect = element.getBoundingClientRect();
+    const computedStyle = window.getComputedStyle(element);
+    const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+    const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+    const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+    const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
 
-    // Fit gizmo exactly to the text element during drag without extra padding
-    const gizmoLeft = rect.left - containerRect.left;
-    const gizmoTop = rect.top - containerRect.top;
-    const gizmoWidth = rect.width;
-    const gizmoHeight = rect.height;
+    // Calculate content-only dimensions (excluding padding)
+    const contentWidth = rect.width - paddingLeft - paddingRight;
+    const contentHeight = rect.height - paddingTop - paddingBottom;
+    
+    // Position gizmo around content only, not padding
+    const gizmoLeft = (rect.left - containerRect.left) + paddingLeft;
+    const gizmoTop = (rect.top - containerRect.top) + paddingTop;
 
     gizmo.style.left = gizmoLeft + 'px';
     gizmo.style.top = gizmoTop + 'px';
-    gizmo.style.width = gizmoWidth + 'px';
-    gizmo.style.height = gizmoHeight + 'px';
+    gizmo.style.width = contentWidth + 'px';
+    gizmo.style.height = contentHeight + 'px';
     gizmo.style.display = 'block';
 }
 
@@ -509,7 +549,9 @@ function downloadMeme() {
             ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'black';
-            ctx.lineWidth = fontSize / 15;
+            ctx.lineWidth = Math.max(fontSize / 15, 2);
+            ctx.lineJoin = 'round';
+            ctx.miterLimit = 2;
 
             // Get the actual rendered text lines from the DOM
             const computedStyle = window.getComputedStyle(topTextDiv);
@@ -552,7 +594,9 @@ function downloadMeme() {
             ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'black';
-            ctx.lineWidth = fontSize / 15;
+            ctx.lineWidth = Math.max(fontSize / 15, 2);
+            ctx.lineJoin = 'round';
+            ctx.miterLimit = 2;
 
             // Get the actual rendered text from the DOM
             const actualText = bottomTextDiv.textContent;
@@ -581,25 +625,26 @@ function downloadMeme() {
             }
         }
 
-        // Draw watermark with drop shadow
-        const watermarkFontSize = Math.max(canvas.width / 80, 8);
+        // Draw watermark exactly as it appears in preview
+        const watermarkFontSize = Math.max(canvas.width / 80, 12);
         ctx.font = `${watermarkFontSize}px Arial, sans-serif`;
         ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
         const watermarkX = canvas.width - 10;
-        const watermarkY = canvas.height - 8;
+        const watermarkY = canvas.height - 10;
 
-        // Draw shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        // Draw shadow for better visibility
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
         ctx.fillText('sundus.fun', watermarkX + 1, watermarkY + 1);
 
-        // Draw main text
+        // Draw main watermark text
         ctx.fillStyle = 'white';
         ctx.fillText('sundus.fun', watermarkX, watermarkY);
 
         // Download the image
         const link = document.createElement('a');
         link.download = `meme-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
     };
 
@@ -716,18 +761,19 @@ async function shareMeme() {
                 }
             }
 
-            // Draw watermark with drop shadow
-            const watermarkFontSize = Math.max(canvas.width / 80, 8);
+            // Draw watermark exactly as it appears in preview
+            const watermarkFontSize = Math.max(canvas.width / 80, 12);
             ctx.font = `${watermarkFontSize}px Arial, sans-serif`;
             ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
             const watermarkX = canvas.width - 10;
-            const watermarkY = canvas.height - 8;
+            const watermarkY = canvas.height - 10;
 
-            // Draw shadow
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            // Draw shadow for better visibility
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
             ctx.fillText('sundus.fun', watermarkX + 1, watermarkY + 1);
 
-            // Draw main text
+            // Draw main watermark text
             ctx.fillStyle = 'white';
             ctx.fillText('sundus.fun', watermarkX, watermarkY);
 
