@@ -73,8 +73,24 @@ function handleImageUpload(event) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        currentMeme = e.target.result;
-        updateMemeDisplay();
+        const img = new Image();
+        img.onload = function() {
+            const aspectRatio = this.height / this.width;
+
+            // Reject images taller than 2:1 aspect ratio
+            if (aspectRatio > 2) {
+                alert('Image is too tall. Please select an image with a height no more than twice its width.');
+                return;
+            }
+
+            // Reset allMemes array since this is a custom upload
+            allMemes = [];
+            currentMemeIndex = 0;
+            currentMeme = e.target.result;
+            resetTextPositions();
+            updateMemeDisplay();
+        };
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
@@ -128,22 +144,22 @@ function updateMemeDisplay() {
     const bottomY = textProperties.bottomText.y || 'auto';
 
     result.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
-            <button onclick="previousMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 800px; margin: 0 auto;">
+            <button onclick="previousMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" style="flex-shrink: 0;" ${allMemes.length === 0 ? 'disabled' : ''}>
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </button>
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl" style="max-width: fit-content;">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl" style="max-width: fit-content; margin: 0 20px;">
                 <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; user-select: none;">
-                    <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 100%; height: auto; max-width: 500px; max-height: 400px; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
+                    <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 400px; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
                     <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
                     <div id="bottomTextDiv" data-text-id="bottomText" class="draggable-text" style="position: absolute; ${bottomY === 'auto' ? 'bottom: 12px' : 'top: ' + bottomY + 'px'}; left: ${typeof bottomX === 'string' ? bottomX : bottomX + 'px'}; transform: ${typeof bottomX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.bottomText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.bottomText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${bottomText}</div>
                     <div id="hoverGizmo" style="display: none; position: absolute; border: 2px dashed #00ff00; background: rgba(0,255,0,0.1); pointer-events: none; z-index: 1001; border-radius: 4px;"></div>
                     <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px; display: none;">sundus.fun</div>
                 </div>
             </div>
-            <button onclick="nextMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" ${allMemes.length === 0 ? 'disabled' : ''}>
+            <button onclick="nextMeme()" class="btn btn-circle btn-ghost hover:bg-base-300" style="flex-shrink: 0;" ${allMemes.length === 0 ? 'disabled' : ''}>
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
