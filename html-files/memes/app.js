@@ -24,8 +24,32 @@ async function loadRandomImage() {
 
     updateMemeDisplay();
 
-    button.innerHTML = 'New Image! 🖼️';
+    button.innerHTML = '🖼️ Random';
     button.disabled = false;
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check if file is an image
+    if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+    }
+
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        alert('File size too large. Please select an image under 10MB.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentMeme = e.target.result;
+        updateMemeDisplay();
+    };
+    reader.readAsDataURL(file);
 }
 
 function loadRandomText() {
@@ -60,9 +84,9 @@ function updateMemeDisplay() {
         </div>
     `;
 
-    // Show download and share buttons when meme is displayed
-    downloadBtn.style.display = 'block';
-    shareBtn.style.display = 'block';
+    // Show action buttons when meme is displayed
+    const memeActions = document.getElementById('memeActions');
+    memeActions.style.display = 'flex';
 }
 
 function adjustFontSize() {

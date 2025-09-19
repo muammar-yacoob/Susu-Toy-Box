@@ -32,20 +32,20 @@
                                     </div>
                                 </div>
 
+                                <!-- File Upload Input (Hidden) -->
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
                                 <!-- Action Buttons -->
                                 <div class="py-6">
                                     <div class="flex justify-center gap-2">
                                         <button onclick="loadRandomImage()" class="btn btn-primary btn-sm hover:scale-105 transition-transform">
-                                            🖼️ Image
+                                            🖼️ Random
+                                        </button>
+                                        <button onclick="document.getElementById('imageUpload').click()" class="btn btn-accent btn-sm hover:scale-105 transition-transform">
+                                            📤 Upload
                                         </button>
                                         <button onclick="loadRandomText()" class="btn btn-secondary btn-sm hover:scale-105 transition-transform">
                                             🎲 Text
-                                        </button>
-                                        <button id="shareBtn" onclick="shareMeme()" class="btn btn-info btn-sm hover:scale-105 transition-transform" style="display: none;">
-                                            📱 Share
-                                        </button>
-                                        <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success btn-sm hover:scale-105 transition-transform" style="display: none;">
-                                            📥 Save
                                         </button>
                                     </div>
                                 </div>
@@ -53,8 +53,18 @@
                         </div>
 
                         <!-- Meme Display Section -->
-                        <div class="flex justify-center items-center w-full">
+                        <div class="flex flex-col items-center w-full space-y-4">
                             <div id="result" class="w-full flex justify-center"></div>
+
+                            <!-- Share and Save Buttons -->
+                            <div class="flex justify-center gap-3" id="memeActions" style="display: none;">
+                                <button id="shareBtn" onclick="shareMeme()" class="btn btn-info btn-md hover:scale-105 transition-transform">
+                                    📱 Share
+                                </button>
+                                <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success btn-md hover:scale-105 transition-transform">
+                                    📥 Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
