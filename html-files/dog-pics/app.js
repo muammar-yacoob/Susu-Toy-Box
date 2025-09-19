@@ -1,6 +1,11 @@
 let dogImages = [];
 let currentIndex = 0;
 
+function updateMetaTags() {
+    // Use the enhanced config to generate all social media meta tags
+    AppConfig.generateSocialMetaTags('dog-pics');
+}
+
 async function initializeDogData() {
     for (let i = 0; i < 10; i++) {
         const response = await fetch('https://dog.ceo/api/breeds/image/random');
@@ -36,7 +41,7 @@ function shareApp() {
     const currentData = dogImages[currentIndex];
     const breedName = currentData ? currentData.breedName : 'Random Dog';
     const shareText = `Check out this adorable ${breedName}! 🐕`;
-    const shareUrl = 'https://yoursite.com/html-files/dog-pics/';
+    const shareUrl = AppConfig.getAppUrl('/html-files/dog-pics/');
     
     if (navigator.share) {
         navigator.share({

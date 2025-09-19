@@ -21,6 +21,7 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="shared/config.js"></script>
     <script src="shared/header.js"></script>
     <script src="shared/footer.js"></script>
 </head>
@@ -68,7 +69,8 @@
     </div>
     <script>
         function initApp() {
-            // Initialization happens in onload
+            // Generate social media cards for homepage
+            AppConfig.generateSocialMetaTags('home');
         }
     </script>
 </body>

@@ -9,44 +9,15 @@
     <meta name="author" content="Susu Apps">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yoursite.com/html-files/dog-pics/">
-    <meta property="og:title" content="Dog Picture Generator - Random Dog Breeds & Photos">
-    <meta property="og:description" content="Generate random dog pictures and discover different dog breeds. Fun interactive dog photo generator with breed information.">
-    <meta property="og:image" content="https://yoursite.com/html-files/dog-pics/og-image.jpg">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://yoursite.com/html-files/dog-pics/">
-    <meta property="twitter:title" content="Dog Picture Generator - Random Dog Breeds & Photos">
-    <meta property="twitter:description" content="Generate random dog pictures and discover different dog breeds. Fun interactive dog photo generator with breed information.">
-    <meta property="twitter:image" content="https://yoursite.com/html-files/dog-pics/og-image.jpg">
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Dog Picture Generator",
-        "description": "Generate random dog pictures and discover different dog breeds",
-        "url": "https://yoursite.com/html-files/dog-pics/",
-        "applicationCategory": "Entertainment",
-        "operatingSystem": "Web Browser",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        }
-    }
-    </script>
+    <!-- Social media meta tags will be generated dynamically by config.js -->
     
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="../../shared/config.js"></script>
     <script src="../../shared/header.js"></script>
     <script src="../../shared/footer.js"></script>
 </head>
-<body onload="loadHeader('🐶 Dog Pictures'); loadFooter(); initializeDogData(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
+<body onload="loadHeader('🐶 Dog Pictures'); loadFooter(); initializeDogData(); updateMetaTags(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
     <div id="background" class="min-h-screen bg-neutral">
         <div class="hero h-full">
             <div class="hero-content">
