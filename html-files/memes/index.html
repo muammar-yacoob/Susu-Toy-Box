@@ -11,24 +11,50 @@
     <div id="background" class="hero min-h-screen bg-neutral">
         <div class="hero-content w-full max-w-none px-8">
             <div class="card w-full bg-base-100 shadow-2xl" style="width: 80vw;">
-                <div class="card-body text-center space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="card-body text-center space-y-6" style="text-align: center !important; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div class="flex flex-col items-center space-y-10">
                         <!-- Controls Section -->
-                        <div class="space-y-4 flex flex-col items-center max-w-md mx-auto w-full">
-                            <input id="topText" type="text" placeholder="Top text (WHEN YOU...)" class="input input-bordered w-full text-lg" value="WHEN YOU" onkeyup="updateMemeText()"/>
-                            <input id="bottomText" type="text" placeholder="Bottom text (FINISH HOMEWORK)" class="input input-bordered w-full text-lg" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
-                            <div class="flex gap-2 w-full">
-                                <button onclick="loadRandomImage()" class="btn btn-primary flex-1 btn-lg">New Image! 🖼️</button>
-                                <button onclick="loadRandomText()" class="btn btn-secondary flex-1 btn-lg">Random Text! 🎲</button>
+                        <div class="bg-base-200 p-8 rounded-3xl shadow-xl max-w-lg w-full">
+                            <div class="space-y-6">
+                                <!-- Text Inputs -->
+                                <div class="space-y-4">
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text text-lg font-semibold">Top Text</span>
+                                        </label>
+                                        <input id="topText" type="text" placeholder="WHEN YOU..." class="input input-bordered input-lg w-full bg-base-100 focus:bg-white transition-colors" value="WHEN YOU" onkeyup="updateMemeText()"/>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text text-lg font-semibold">Bottom Text</span>
+                                        </label>
+                                        <input id="bottomText" type="text" placeholder="FINISH HOMEWORK..." class="input input-bordered input-lg w-full bg-base-100 focus:bg-white transition-colors" value="FINISH HOMEWORK" onkeyup="updateMemeText()"/>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="py-6">
+                                    <div class="flex justify-center gap-2">
+                                        <button onclick="loadRandomImage()" class="btn btn-primary btn-sm hover:scale-105 transition-transform">
+                                            🖼️ Image
+                                        </button>
+                                        <button onclick="loadRandomText()" class="btn btn-secondary btn-sm hover:scale-105 transition-transform">
+                                            🎲 Text
+                                        </button>
+                                        <button id="shareBtn" onclick="shareMeme()" class="btn btn-info btn-sm hover:scale-105 transition-transform" style="display: none;">
+                                            📱 Share
+                                        </button>
+                                        <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success btn-sm hover:scale-105 transition-transform" style="display: none;">
+                                            📥 Save
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <button id="downloadBtn" onclick="downloadMeme()" class="btn btn-success w-full btn-lg" style="display: none;">
-                                Download Meme! 📥
-                            </button>
                         </div>
 
                         <!-- Meme Display Section -->
-                        <div class="flex justify-center items-center">
-                            <div id="result" class="w-full"></div>
+                        <div class="flex justify-center items-center w-full">
+                            <div id="result" class="w-full flex justify-center"></div>
                         </div>
                     </div>
                 </div>

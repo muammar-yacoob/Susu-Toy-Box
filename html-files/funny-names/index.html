@@ -51,9 +51,16 @@
         <div class="hero-content">
             <div class="card w-full max-w-md bg-base-100 shadow-2xl">
                 <div class="card-body text-center space-y-3">
-                    <div class="flex gap-2 justify-center">
-                        <button onclick="mainFunction()" class="btn btn-primary btn-sm">Generate Names!</button>
-                        <button onclick="shareApp()" class="btn btn-secondary btn-sm">📤 Share</button>
+                    <div class="flex gap-2 justify-center flex-wrap">
+                        <select id="nameType" class="select select-bordered select-sm w-40" onchange="generateSelectedNames()">
+                            <option value="funny">🎭 Funny Names</option>
+                            <option value="games">🎮 Game Names</option>
+                            <option value="social">📱 Social Media</option>
+                            <option value="pets">🐾 Pet Names</option>
+                            <option value="fantasy">🧙‍♂️ Fantasy Names</option>
+                            <option value="tech">💻 Tech Names</option>
+                        </select>
+                        <button onclick="generateSelectedNames()" class="btn btn-secondary btn-sm">🔄 Populate</button>
                     </div>
                     <div id="result"></div>
                 </div>

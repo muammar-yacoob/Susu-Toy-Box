@@ -1,32 +1,73 @@
 async function initApp() {
     const result = document.getElementById('result');
     result.innerHTML = '';
+    
+    // Generate names immediately on page load
+    generateSelectedNames();
 }
 
-async function mainFunction() {
+
+async function generateSelectedNames() {
     const result = document.getElementById('result');
-    const button = document.querySelector('button');
+    const select = document.getElementById('nameType');
+    const selectedType = select.value;
 
-    button.innerHTML = '<span class="loading loading-spinner loading-sm"></span>';
-    button.disabled = true;
+    result.innerHTML = '<div class="flex justify-center"><span class="loading loading-spinner loading-md"></span></div>';
 
-    const names = [
-        "Bubbles McFluffington", "Sir Wigglesworth", "Captain Noodle", "Princess Sparklebutt",
-        "Duke Picklesworth", "Lady Gigglesnort", "Baron Von Snuggles", "Countess Tickletush",
-        "Professor Bumblebee", "Madame Wobblebottom", "General Fluffernutter", "Admiral Cuddlesworth",
-        "Sir Reginald Fluffington III", "Lady Penelope Gigglesworth", "Captain Bartholomew Snuggles",
-        "Dame Wobblepants", "Lord Gigglesnort", "Miss Fluffernutter", "Dr. Snugglesworth",
-        "Count Picklesworth", "Duchess Sparklebutt", "Baroness Noodlehead", "Sir Tickletush",
-        "Lady McFluffington", "Captain Gigglesworth", "Professor Snuggles", "Madame Wobblebottom"
-    ];
+    const allNames = {
+        funny: [
+            "Bubbles McFluffington", "Sir Wigglesworth", "Captain Noodle", "Princess Sparklebutt",
+            "Duke Picklesworth", "Lady Gigglesnort", "Baron Von Snuggles", "Countess Tickletush",
+            "Professor Bumblebee", "Madame Wobblebottom", "General Fluffernutter", "Admiral Cuddlesworth",
+            "Sir Reginald Fluffington III", "Lady Penelope Gigglesworth", "Captain Bartholomew Snuggles",
+            "Dame Wobblepants", "Lord Gigglesnort", "Miss Fluffernutter", "Dr. Snugglesworth",
+            "Count Picklesworth", "Duchess Sparklebutt", "Baroness Noodlehead", "Sir Tickletush",
+            "Lady McFluffington", "Captain Gigglesworth", "Professor Snuggles", "Madame Wobblebottom"
+        ],
+        games: [
+            "ShadowStrike", "DragonSlayer99", "PixelWarrior", "CyberNinja", "MysticMage",
+            "BlazeRunner", "StormBreaker", "FrostWolf", "ThunderBolt", "FireStorm",
+            "NightHawk", "SteelFist", "CrimsonBlade", "VoidWalker", "LightningStrike"
+        ],
+        social: [
+            "CoolCat2024", "SunshineSmile", "DreamChaser", "HappyVibes", "StarGazer",
+            "OceanWave", "MountainPeak", "CityLights", "NightOwl", "MorningStar",
+            "GoldenHeart", "SilverLining", "BlueSky", "GreenThumb", "PurpleRain"
+        ],
+        pets: [
+            "FluffyButt", "Sir Barksalot", "Princess Whiskers", "Captain Fluff", "Lady Purr",
+            "Duke Wagtail", "Count Meow", "Baron Woofington", "Duchess Snuggles", "Lord Paws",
+            "Miss Fuzzball", "General Cuddles", "Admiral Purrington", "Colonel Fluffernut", "Major Snuggles"
+        ],
+        fantasy: [
+            "Aelindra Moonwhisper", "Thorin Ironbeard", "Luna Shadowdancer", "Phoenix Rising",
+            "Sage Windcaller", "Raven Darkwing", "Starweaver", "Stormchaser", "Crystal Heart", "Ember Flame",
+            "Aria Starborn", "Kael Fireheart", "Zara Moonstone", "Eldric Stormwind", "Nyx Shadowbane"
+        ],
+        tech: [
+            "CodeNinja", "ByteMaster", "PixelPioneer", "DataDragon", "CloudWalker",
+            "BinaryBeast", "CyberSage", "QuantumLeap", "NeuralNet", "DigitalDream",
+            "AlgorithmAce", "SyntaxSage", "DebugMaster", "FrameworkFury", "APIAssassin"
+        ]
+    };
 
+    const categoryEmojis = {
+        funny: "🎭",
+        games: "🎮",
+        social: "📱", 
+        pets: "🐾",
+        fantasy: "🧙‍♂️",
+        tech: "💻"
+    };
+
+    const categoryNames = allNames[selectedType];
     const selectedNames = [];
     const usedIndices = new Set();
     
-    while (selectedNames.length < 5) {
-        const randomIndex = Math.floor(Math.random() * names.length);
+    while (selectedNames.length < 10) {
+        const randomIndex = Math.floor(Math.random() * categoryNames.length);
         if (!usedIndices.has(randomIndex)) {
-            selectedNames.push(names[randomIndex]);
+            selectedNames.push(categoryNames[randomIndex]);
             usedIndices.add(randomIndex);
         }
     }
@@ -38,10 +79,12 @@ async function mainFunction() {
         </div>`
     ).join('');
 
-    result.innerHTML = `<div class="space-y-1">${namesList}</div>`;
-
-    button.innerHTML = 'Generate Names!';
-    button.disabled = false;
+    result.innerHTML = `
+        <div class="text-center mb-3">
+            <span class="badge badge-primary">${categoryEmojis[selectedType]} ${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Names</span>
+        </div>
+        <div class="space-y-1">${namesList}</div>
+    `;
 }
 
 function copyToClipboard(text) {
@@ -60,92 +103,4 @@ function showToast(message) {
     setTimeout(() => {
         toast.remove();
     }, 1000);
-}
-
-function shareApp() {
-    const shareText = 'Check out this hilarious Funny Name Generator! 😄';
-    const shareUrl = 'https://yoursite.com/html-files/funny-names/';
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Funny Name Generator',
-            text: shareText,
-            url: shareUrl
-        });
-    } else {
-        showShareModal(shareText, shareUrl);
-    }
-}
-
-function showShareModal(text, url) {
-    const modal = document.createElement('div');
-    modal.className = 'modal modal-open';
-    modal.innerHTML = `
-        <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">Share This App</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="shareToWhatsApp('${text}', '${url}')" class="btn btn-success btn-sm">
-                    📱 WhatsApp
-                </button>
-                <button onclick="shareToInstagram('${text}', '${url}')" class="btn btn-sm" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
-                    📸 Instagram
-                </button>
-                <button onclick="shareToFacebook('${url}')" class="btn btn-primary btn-sm">
-                    👥 Facebook
-                </button>
-                <button onclick="shareToTwitter('${text}', '${url}')" class="btn btn-info btn-sm">
-                    🐦 Twitter
-                </button>
-                <button onclick="shareToTelegram('${text}', '${url}')" class="btn btn-sm" style="background: #0088CC;">
-                    ✈️ Telegram
-                </button>
-                <button onclick="copyToClipboard('${text}', '${url}')" class="btn btn-secondary btn-sm">
-                    📋 Copy Link
-                </button>
-            </div>
-            <div class="modal-action">
-                <button onclick="this.closest('.modal').remove()" class="btn">Close</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-function shareToWhatsApp(text, url) {
-    const message = `${text}\n\n${url}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-    document.querySelector('.modal').remove();
-}
-
-function shareToInstagram(text, url) {
-    const message = `${text}\n\n${url}\n\n#FunnyNames #NameGenerator #SusuApps`;
-    navigator.clipboard.writeText(message).then(() => {
-        alert('Link copied! Paste it in your Instagram story or post 📸');
-        document.querySelector('.modal').remove();
-    });
-}
-
-function shareToFacebook(url) {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-    document.querySelector('.modal').remove();
-}
-
-function shareToTwitter(text, url) {
-    const tweet = `${text}\n\n${url}\n\n#FunnyNames #NameGenerator #SusuApps`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank');
-    document.querySelector('.modal').remove();
-}
-
-function shareToTelegram(text, url) {
-    const message = `${text}\n\n${url}`;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-    document.querySelector('.modal').remove();
-}
-
-function copyToClipboard(text, url) {
-    const message = `${text}\n\n${url}`;
-    navigator.clipboard.writeText(message).then(() => {
-        showToast('Link copied to clipboard! 📋');
-        document.querySelector('.modal').remove();
-    });
 }

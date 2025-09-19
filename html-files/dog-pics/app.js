@@ -12,6 +12,14 @@ async function initializeDogData() {
             breedName: breedName
         });
     }
+    
+    // Show first dog picture immediately
+    if (dogImages.length > 0) {
+        const firstDog = dogImages[0];
+        document.querySelector('#result img').src = firstDog.imageUrl;
+        document.querySelector('#result img').alt = firstDog.breedName;
+        document.querySelector('#result .breed-name').textContent = firstDog.breedName;
+    }
 }
 
 function GetData(action) {

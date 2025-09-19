@@ -7,10 +7,10 @@
     <script src="../../shared/header.js"></script>
     <script src="../../shared/footer.js"></script>
 </head>
-<body onload="loadHeader('🤓 Random Facts'); loadFooter(); mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})">
-    <div id="background" class="hero min-h-screen bg-neutral">
-        <div class="hero-content">
-            <div class="card w-96 bg-base-100 shadow-2xl">
+<body onload="loadHeader('🤓 Random Facts'); loadFooter(); mainFunction(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}})" style="padding-top: 120px;">
+    <div id="background" class="min-h-screen bg-neutral">
+        <div class="flex justify-center items-center min-h-screen">
+            <div class="card w-80 bg-base-100 shadow-2xl">
                 <div class="card-body text-center space-y-4">
                     <button onclick="mainFunction()" class="btn btn-primary">Get Random Fact!</button>
                     <div id="result"></div>
