@@ -415,11 +415,7 @@ async function getSpaceInfo() {
                         const nasaData = await getNasaAstronautData(astronaut.name);
                         if (nasaData && nasaData.imageUrl) {
                             astronautObj.nasaImage = nasaData.imageUrl;
-                            // Update the image in the UI if still visible
-                            const imgElement = document.querySelector(`[data-astronaut="${astronaut.name}"] img`);
-                            if (imgElement) {
-                                imgElement.src = nasaData.imageUrl;
-                            }
+                            // Keep astronaut icon on cards, real photo only for modal
                         }
                         astronautObj.nasaData = nasaData;
                         // Cache the complete astronaut object
@@ -496,11 +492,7 @@ async function getSpaceInfo() {
                         const nasaData = await getNasaAstronautData(astronaut.name);
                         if (nasaData && nasaData.imageUrl) {
                             astronautObj.nasaImage = nasaData.imageUrl;
-                            // Update the image in the UI if still visible
-                            const imgElement = document.querySelector(`[data-astronaut="${astronaut.name}"] img`);
-                            if (imgElement) {
-                                imgElement.src = nasaData.imageUrl;
-                            }
+                            // Keep astronaut icon on cards, real photo only for modal
                         }
                         astronautObj.nasaData = nasaData;
                         // Cache the complete astronaut object
