@@ -1,62 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://yoursite.com/html-files/funny-names/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/</loc>
+        <lastmod>2025-01-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://sundus.fun/memes/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/dog-pics/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/weather/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/cat-pics/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/space-info/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/pokemon/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/cat-pics/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/space-info/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/dog-pics/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/weather/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/pokemon/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/random-fact/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/3d-viewer/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/memes/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/random-fact/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/ai-fun/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/funny-names/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://yoursite.com/html-files/3d-viewer/</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://sundus.fun/ai-fun/</loc>
+        <lastmod>2025-01-19</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
