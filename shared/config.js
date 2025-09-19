@@ -9,6 +9,7 @@ const AppConfig = {
         author: "Susu Apps",
         twitterSite: "@SusuApps", // Update with actual Twitter handle
         defaultImage: "/fav.png", // Default fallback image
+        favicon: "/favicon.ico", // Site favicon for card branding
         type: "website"
     },
     
@@ -108,6 +109,7 @@ const AppConfig = {
             title: appData.title || `${this.defaultCard.siteName} - Fun Interactive Web Apps`,
             description: appData.description || "A collection of fun, interactive web applications built for education and entertainment.",
             image: this.baseUrl + (appData.image || this.defaultCard.defaultImage),
+            favicon: this.baseUrl + this.defaultCard.favicon,
             url: this.getCurrentPageUrl(),
             siteName: this.defaultCard.siteName,
             author: this.defaultCard.author,
@@ -143,21 +145,37 @@ const AppConfig = {
             { name: 'twitter:site', content: cardData.twitterSite },
             { name: 'twitter:creator', content: cardData.twitterSite },
             
+            // Favicon and branding
+            { rel: 'icon', type: 'image/x-icon', href: cardData.favicon },
+            { rel: 'shortcut icon', href: cardData.favicon },
+            { rel: 'apple-touch-icon', href: cardData.favicon },
+            
             // SEO
             { name: 'description', content: cardData.description },
             { name: 'keywords', content: cardData.keywords },
             { name: 'author', content: cardData.author }
         ];
         
-        // Inject meta tags into head
+        // Inject meta tags and link elements into head
         const head = document.head;
         metaTags.forEach(tag => {
-            const meta = document.createElement('meta');
-            if (tag.property) meta.setAttribute('property', tag.property);
-            if (tag.name) meta.setAttribute('name', tag.name);
-            meta.setAttribute('content', tag.content);
-            meta.classList.add('dynamic-social-meta');
-            head.appendChild(meta);
+            if (tag.rel) {
+                // Create link element for favicon and icons
+                const link = document.createElement('link');
+                link.setAttribute('rel', tag.rel);
+                if (tag.type) link.setAttribute('type', tag.type);
+                if (tag.href) link.setAttribute('href', tag.href);
+                link.classList.add('dynamic-social-meta');
+                head.appendChild(link);
+            } else {
+                // Create meta element for other tags
+                const meta = document.createElement('meta');
+                if (tag.property) meta.setAttribute('property', tag.property);
+                if (tag.name) meta.setAttribute('name', tag.name);
+                if (tag.content) meta.setAttribute('content', tag.content);
+                meta.classList.add('dynamic-social-meta');
+                head.appendChild(meta);
+            }
         });
         
         // Update structured data
@@ -166,7 +184,7 @@ const AppConfig = {
     
     // Remove existing social meta tags
     removeSocialMetaTags: function() {
-        const existingTags = document.querySelectorAll('.dynamic-social-meta, meta[property^="og:"], meta[name^="twitter:"]');
+        const existingTags = document.querySelectorAll('.dynamic-social-meta, meta[property^="og:"], meta[name^="twitter:"], link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
         existingTags.forEach(tag => tag.remove());
     },
     
@@ -184,6 +202,7 @@ const AppConfig = {
             "description": cardData.description,
             "url": cardData.url,
             "image": cardData.image,
+            "logo": cardData.favicon,
             "author": {
                 "@type": "Person",
                 "name": cardData.author
@@ -191,7 +210,8 @@ const AppConfig = {
             "publisher": {
                 "@type": "Organization",
                 "name": cardData.siteName,
-                "url": this.baseUrl
+                "url": this.baseUrl,
+                "logo": cardData.favicon
             },
             "applicationCategory": "Entertainment",
             "operatingSystem": "Web Browser",

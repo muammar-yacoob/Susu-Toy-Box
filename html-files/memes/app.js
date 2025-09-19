@@ -170,8 +170,8 @@ function updateMemeDisplay() {
             <div style="padding: 20px; display: flex; justify-content: center; align-items: center;">
                 <div id="memeContainer" style="position: relative; display: flex; justify-content: center; align-items: center; max-width: 100%; margin: 0 auto; user-select: none;">
                     <img id="memeImage" src="${currentMeme}" alt="Meme" style="width: 400px; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);" onload="setupDraggableText()">
-                    <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
-                    <div id="bottomTextDiv" data-text-id="bottomText" class="draggable-text" style="position: absolute; ${bottomY === 'auto' ? 'bottom: 12px' : 'top: ' + bottomY + 'px'}; left: ${typeof bottomX === 'string' ? bottomX : bottomX + 'px'}; transform: ${typeof bottomX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.bottomText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 90%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.bottomText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${bottomText}</div>
+                    <div id="topTextDiv" data-text-id="topText" class="draggable-text" style="position: absolute; top: ${typeof topY === 'string' ? topY : topY + 'px'}; left: ${typeof topX === 'string' ? topX : topX + 'px'}; transform: ${typeof topX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.topText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 100%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.topText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${topText}</div>
+                    <div id="bottomTextDiv" data-text-id="bottomText" class="draggable-text" style="position: absolute; ${bottomY === 'auto' ? 'bottom: 12px' : 'top: ' + bottomY + 'px'}; left: ${typeof bottomX === 'string' ? bottomX : bottomX + 'px'}; transform: ${typeof bottomX === 'string' ? 'translateX(-50%)' : 'translateX(-50%)'} rotate(${textProperties.bottomText.rotation}deg); color: white; font-weight: 900; text-shadow: 3px 3px 6px black, -1px -1px 2px black; text-align: center; max-width: 100%; line-height: 1.1; font-family: Impact, Arial Black, sans-serif; letter-spacing: 1px; font-size: ${textProperties.bottomText.fontSize}px; cursor: move; padding: 5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">${bottomText}</div>
                     <div id="hoverGizmo" style="display: none; position: absolute; border: 2px dashed #00ff00; background: rgba(0,255,0,0.1); pointer-events: none; z-index: 1001; border-radius: 4px;"></div>
                     <div id="watermarkDiv" style="position: absolute; bottom: 4px; right: 8px; color: rgba(255,255,255,0.7); font-size: 10px; font-family: Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); letter-spacing: 0.5px; display: none;">sundus.fun</div>
                 </div>
@@ -234,13 +234,29 @@ function updateTextWrapping() {
     const memeImage = document.getElementById('memeImage');
     if (!memeImage) return;
 
-    const imageWidth = memeImage.getBoundingClientRect().width;
-    const maxTextWidth = imageWidth * 0.9; // 90% of image width
+    // Wait for image to load and get actual dimensions
+    if (memeImage.complete && memeImage.naturalWidth > 0) {
+        // Use the actual image dimensions scaled to display size
+        const displayRect = memeImage.getBoundingClientRect();
+        const scaleX = displayRect.width / memeImage.naturalWidth;
 
-    const draggableElements = document.querySelectorAll('.draggable-text');
-    draggableElements.forEach(element => {
-        element.style.maxWidth = maxTextWidth + 'px';
-    });
+        // Calculate text width based on actual image width scaled to display
+        const maxTextWidth = memeImage.naturalWidth * scaleX;
+
+        const draggableElements = document.querySelectorAll('.draggable-text');
+        draggableElements.forEach(element => {
+            // Set both max-width and width to match actual image proportions
+            element.style.maxWidth = maxTextWidth + 'px';
+            element.style.width = maxTextWidth + 'px';
+            // Ensure proper text wrapping CSS
+            element.style.wordWrap = 'break-word';
+            element.style.overflowWrap = 'break-word';
+            element.style.whiteSpace = 'normal';
+        });
+    } else {
+        // Image not loaded yet, wait for load event
+        memeImage.addEventListener('load', updateTextWrapping, { once: true });
+    }
 }
 
 function toggleTextSelection(e) {
@@ -546,6 +562,7 @@ function downloadMeme() {
             const topProps = textProperties.topText;
             const fontSize = topProps.fontSize * scaleX;
 
+            // Set font with letter spacing simulation
             ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'black';
@@ -553,36 +570,93 @@ function downloadMeme() {
             ctx.lineJoin = 'round';
             ctx.miterLimit = 2;
 
-            // Get the actual rendered text lines from the DOM
-            const computedStyle = window.getComputedStyle(topTextDiv);
+            // Get actual text content and handle line breaks based on image width
             const actualText = topTextDiv.textContent;
 
-            // Use a temporary canvas to measure text exactly as the browser renders it
+            // Calculate proper text wrapping based on image width
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             tempCtx.font = ctx.font;
 
+            const words = actualText.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            for (let word of words) {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const metrics = tempCtx.measureText(testLine);
+
+                if (metrics.width > canvas.width && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+
             const containerRect = container.getBoundingClientRect();
             const topRect = topTextDiv.getBoundingClientRect();
 
-            // Calculate exact position based on DOM element
-            const x = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
-            const y = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
+            // Calculate position based on DOM element
+            const centerX = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
+            const centerY = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
+
+            // Draw text with proper shadows to match CSS text-shadow: 3px 3px 6px black, -1px -1px 2px black
+            const drawTextWithShadow = (text, x, y) => {
+                // Draw drop shadow (3px 3px 6px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.filter = 'blur(3px)';
+                ctx.fillText(text, x + 3*scaleX, y + 3*scaleY);
+                ctx.restore();
+
+                // Draw inner shadow (-1px -1px 2px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.filter = 'blur(1px)';
+                ctx.fillText(text, x - 1*scaleX, y - 1*scaleY);
+                ctx.restore();
+
+                // Draw stroke (outline)
+                ctx.strokeText(text, x, y);
+
+                // Draw main text
+                ctx.fillStyle = 'white';
+                ctx.fillText(text, x, y);
+            };
 
             if (topProps.rotation !== 0) {
                 ctx.save();
-                ctx.translate(x, y);
+                ctx.translate(centerX, centerY);
                 ctx.rotate((topProps.rotation * Math.PI) / 180);
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeText(actualText, 0, 0);
-                ctx.fillText(actualText, 0, 0);
+
+                if (lines.length === 1) {
+                    drawTextWithShadow(lines[0], 0, 0);
+                } else {
+                    const lineHeight = fontSize * 1.1;
+                    const totalHeight = lines.length * lineHeight;
+                    lines.forEach((line, index) => {
+                        const lineY = (index - (lines.length - 1) / 2) * lineHeight;
+                        drawTextWithShadow(line, 0, lineY);
+                    });
+                }
                 ctx.restore();
             } else {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeText(actualText, x, y);
-                ctx.fillText(actualText, x, y);
+
+                if (lines.length === 1) {
+                    drawTextWithShadow(lines[0], centerX, centerY);
+                } else {
+                    const lineHeight = fontSize * 1.1;
+                    lines.forEach((line, index) => {
+                        const lineY = centerY + (index - (lines.length - 1) / 2) * lineHeight;
+                        drawTextWithShadow(line, centerX, lineY);
+                    });
+                }
             }
         }
 
@@ -591,6 +665,7 @@ function downloadMeme() {
             const bottomProps = textProperties.bottomText;
             const fontSize = bottomProps.fontSize * scaleX;
 
+            // Set font with letter spacing simulation
             ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'black';
@@ -598,30 +673,92 @@ function downloadMeme() {
             ctx.lineJoin = 'round';
             ctx.miterLimit = 2;
 
-            // Get the actual rendered text from the DOM
+            // Get actual text content and handle line breaks based on image width
             const actualText = bottomTextDiv.textContent;
+
+            // Calculate proper text wrapping based on image width
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.font = ctx.font;
+
+            const words = actualText.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            for (let word of words) {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const metrics = tempCtx.measureText(testLine);
+
+                if (metrics.width > canvas.width && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
 
             const containerRect = container.getBoundingClientRect();
             const bottomRect = bottomTextDiv.getBoundingClientRect();
 
-            // Calculate exact position based on DOM element
-            const x = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
-            const y = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
+            // Calculate position based on DOM element
+            const centerX = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
+            const centerY = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
+
+            // Draw text with proper shadows to match CSS text-shadow: 3px 3px 6px black, -1px -1px 2px black
+            const drawTextWithShadow = (text, x, y) => {
+                // Draw drop shadow (3px 3px 6px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.filter = 'blur(3px)';
+                ctx.fillText(text, x + 3*scaleX, y + 3*scaleY);
+                ctx.restore();
+
+                // Draw inner shadow (-1px -1px 2px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.filter = 'blur(1px)';
+                ctx.fillText(text, x - 1*scaleX, y - 1*scaleY);
+                ctx.restore();
+
+                // Draw stroke (outline)
+                ctx.strokeText(text, x, y);
+
+                // Draw main text
+                ctx.fillStyle = 'white';
+                ctx.fillText(text, x, y);
+            };
 
             if (bottomProps.rotation !== 0) {
                 ctx.save();
-                ctx.translate(x, y);
+                ctx.translate(centerX, centerY);
                 ctx.rotate((bottomProps.rotation * Math.PI) / 180);
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeText(actualText, 0, 0);
-                ctx.fillText(actualText, 0, 0);
+
+                if (lines.length === 1) {
+                    drawTextWithShadow(lines[0], 0, 0);
+                } else {
+                    const lineHeight = fontSize * 1.1;
+                    lines.forEach((line, index) => {
+                        const lineY = (index - (lines.length - 1) / 2) * lineHeight;
+                        drawTextWithShadow(line, 0, lineY);
+                    });
+                }
                 ctx.restore();
             } else {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeText(actualText, x, y);
-                ctx.fillText(actualText, x, y);
+
+                if (lines.length === 1) {
+                    drawTextWithShadow(lines[0], centerX, centerY);
+                } else {
+                    const lineHeight = fontSize * 1.1;
+                    lines.forEach((line, index) => {
+                        const lineY = centerY + (index - (lines.length - 1) / 2) * lineHeight;
+                        drawTextWithShadow(line, centerX, lineY);
+                    });
+                }
             }
         }
 
@@ -687,6 +824,30 @@ async function shareMeme() {
 
             ctx.textAlign = 'left';
 
+            // Helper function for drawing text with proper shadows to match CSS
+            const drawTextWithShadow = (ctx, text, x, y, scaleX, scaleY) => {
+                // Draw drop shadow (3px 3px 6px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.filter = 'blur(3px)';
+                ctx.fillText(text, x + 3*scaleX, y + 3*scaleY);
+                ctx.restore();
+
+                // Draw inner shadow (-1px -1px 2px black)
+                ctx.save();
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.filter = 'blur(1px)';
+                ctx.fillText(text, x - 1*scaleX, y - 1*scaleY);
+                ctx.restore();
+
+                // Draw stroke (outline)
+                ctx.strokeText(text, x, y);
+
+                // Draw main text
+                ctx.fillStyle = 'white';
+                ctx.fillText(text, x, y);
+            };
+
             // Draw top text exactly as displayed using DOM measurements
             if (topText && topTextDiv) {
                 const topProps = textProperties.topText;
@@ -695,32 +856,72 @@ async function shareMeme() {
                 ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
                 ctx.fillStyle = 'white';
                 ctx.strokeStyle = 'black';
-                ctx.lineWidth = fontSize / 15;
+                ctx.lineWidth = Math.max(fontSize / 15, 2);
+                ctx.lineJoin = 'round';
+                ctx.miterLimit = 2;
 
-                // Get the actual rendered text from the DOM
+                // Get actual text content and handle line breaks based on image width
                 const actualText = topTextDiv.textContent;
+
+                // Calculate proper text wrapping based on image width
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = ctx.font;
+
+                const words = actualText.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (let word of words) {
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    const metrics = tempCtx.measureText(testLine);
+
+                    if (metrics.width > canvas.width && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
 
                 const containerRect = container.getBoundingClientRect();
                 const topRect = topTextDiv.getBoundingClientRect();
 
-                // Calculate exact position based on DOM element
-                const x = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
-                const y = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
+                // Calculate position based on DOM element
+                const centerX = (topRect.left + topRect.width/2 - containerRect.left) * scaleX;
+                const centerY = (topRect.top + topRect.height/2 - containerRect.top) * scaleY;
 
                 if (topProps.rotation !== 0) {
                     ctx.save();
-                    ctx.translate(x, y);
+                    ctx.translate(centerX, centerY);
                     ctx.rotate((topProps.rotation * Math.PI) / 180);
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.strokeText(actualText, 0, 0);
-                    ctx.fillText(actualText, 0, 0);
+
+                    if (lines.length === 1) {
+                        drawTextWithShadow(ctx, lines[0], 0, 0, scaleX, scaleY);
+                    } else {
+                        const lineHeight = fontSize * 1.1;
+                        lines.forEach((line, index) => {
+                            const lineY = (index - (lines.length - 1) / 2) * lineHeight;
+                            drawTextWithShadow(ctx, line, 0, lineY, scaleX, scaleY);
+                        });
+                    }
                     ctx.restore();
                 } else {
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.strokeText(actualText, x, y);
-                    ctx.fillText(actualText, x, y);
+
+                    if (lines.length === 1) {
+                        drawTextWithShadow(ctx, lines[0], centerX, centerY, scaleX, scaleY);
+                    } else {
+                        const lineHeight = fontSize * 1.1;
+                        lines.forEach((line, index) => {
+                            const lineY = centerY + (index - (lines.length - 1) / 2) * lineHeight;
+                            drawTextWithShadow(ctx, line, centerX, lineY, scaleX, scaleY);
+                        });
+                    }
                 }
             }
 
@@ -732,32 +933,72 @@ async function shareMeme() {
                 ctx.font = `900 ${fontSize}px Impact, Arial Black, sans-serif`;
                 ctx.fillStyle = 'white';
                 ctx.strokeStyle = 'black';
-                ctx.lineWidth = fontSize / 15;
+                ctx.lineWidth = Math.max(fontSize / 15, 2);
+                ctx.lineJoin = 'round';
+                ctx.miterLimit = 2;
 
-                // Get the actual rendered text from the DOM
+                // Get actual text content and handle line breaks based on image width
                 const actualText = bottomTextDiv.textContent;
+
+                // Calculate proper text wrapping based on image width
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = ctx.font;
+
+                const words = actualText.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (let word of words) {
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    const metrics = tempCtx.measureText(testLine);
+
+                    if (metrics.width > canvas.width && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
 
                 const containerRect = container.getBoundingClientRect();
                 const bottomRect = bottomTextDiv.getBoundingClientRect();
 
-                // Calculate exact position based on DOM element
-                const x = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
-                const y = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
+                // Calculate position based on DOM element
+                const centerX = (bottomRect.left + bottomRect.width/2 - containerRect.left) * scaleX;
+                const centerY = (bottomRect.top + bottomRect.height/2 - containerRect.top) * scaleY;
 
                 if (bottomProps.rotation !== 0) {
                     ctx.save();
-                    ctx.translate(x, y);
+                    ctx.translate(centerX, centerY);
                     ctx.rotate((bottomProps.rotation * Math.PI) / 180);
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.strokeText(actualText, 0, 0);
-                    ctx.fillText(actualText, 0, 0);
+
+                    if (lines.length === 1) {
+                        drawTextWithShadow(ctx, lines[0], 0, 0, scaleX, scaleY);
+                    } else {
+                        const lineHeight = fontSize * 1.1;
+                        lines.forEach((line, index) => {
+                            const lineY = (index - (lines.length - 1) / 2) * lineHeight;
+                            drawTextWithShadow(ctx, line, 0, lineY, scaleX, scaleY);
+                        });
+                    }
                     ctx.restore();
                 } else {
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.strokeText(actualText, x, y);
-                    ctx.fillText(actualText, x, y);
+
+                    if (lines.length === 1) {
+                        drawTextWithShadow(ctx, lines[0], centerX, centerY, scaleX, scaleY);
+                    } else {
+                        const lineHeight = fontSize * 1.1;
+                        lines.forEach((line, index) => {
+                            const lineY = centerY + (index - (lines.length - 1) / 2) * lineHeight;
+                            drawTextWithShadow(ctx, line, centerX, lineY, scaleX, scaleY);
+                        });
+                    }
                 }
             }
 
