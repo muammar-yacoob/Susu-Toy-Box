@@ -10,6 +10,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Susu's Playground">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com/3.4.0"></script>
     <script>
@@ -22,8 +25,10 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="shared/config.js"></script>
+    <script src="shared/analytics.js"></script>
     <script src="shared/header.js"></script>
     <script src="shared/footer.js"></script>
+    <script src="shared/install-prompt.js"></script>
 </head>
 <body onload="loadHeader('🎉 Susu\'s Playground'); loadFooter(); particlesJS('background', {particles:{number:{value:100}, color:{value:'#fff'}, opacity:{value:0.5}, size:{value:3}, line_linked:{enable:false}, move:{enable:true, speed:1, direction:'bottom'}}}); initApp();">
     <div id="background" class="hero min-h-screen bg-neutral">
@@ -33,34 +38,34 @@
                 <p class="text-lg lg:text-xl text-gray-200 mb-8">Welcome to my awesome collection of web apps! Click any app to play with it! 🚀✨</p>
 
                 <div class="flex flex-wrap justify-center gap-3 mb-5">
-                    <button onclick="window.location.href='/weather'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('weather_app', 'homepage'); window.location.href='/weather'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🌤️ Weather App
                     </button>
-                    <button onclick="window.location.href='/random-fact'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('random_facts_app', 'homepage'); window.location.href='/random-fact'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🤓 Random Facts
                     </button>
-                    <button onclick="window.location.href='/cat-pics'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('cat_pics_app', 'homepage'); window.location.href='/cat-pics'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🐱 Cat Pictures
                     </button>
-                    <button onclick="window.location.href='/dog-pics'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('dog_pics_app', 'homepage'); window.location.href='/dog-pics'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🐶 Dog Pictures
                     </button>
-                    <button onclick="window.location.href='/space-info'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('space_info_app', 'homepage'); window.location.href='/space-info'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🚀 Space Explorer
                     </button>
-                    <button onclick="window.location.href='/pokemon'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('pokemon_app', 'homepage'); window.location.href='/pokemon'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         ⚡ Pokemon Info
                     </button>
-                    <button onclick="window.location.href='/3d-viewer'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('3d_viewer_app', 'homepage'); window.location.href='/3d-viewer'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🎮 3D Model Viewer
                     </button>
-                    <button onclick="window.location.href='/memes'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('memes_app', 'homepage'); window.location.href='/memes'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         😂 Meme Generator
                     </button>
-                    <button onclick="window.location.href='/funny-names'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('funny_names_app', 'homepage'); window.location.href='/funny-names'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🎭 Funny Names
                     </button>
-                    <button onclick="window.location.href='/ai-fun'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
+                    <button onclick="if(window.trackButtonClick) trackButtonClick('ai_fun_app', 'homepage'); window.location.href='/ai-fun'" class="px-5 py-3 text-white border-none rounded-2xl cursor-pointer text-sm lg:text-base mx-1 transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 shadow-lg hover:-translate-y-1 hover:shadow-xl hover:from-red-700 hover:to-red-800">
                         🤖 AI Fun
                     </button>
                 </div>
@@ -71,6 +76,19 @@
         function initApp() {
             // Generate social media cards for homepage
             AppConfig.generateSocialMetaTags('home');
+        }
+        
+        // Register Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
         }
     </script>
 </body>

@@ -1,11 +1,16 @@
 function loadHeader(pageTitle = "Fun Code App") {
+    // Track page view for analytics
+    if (window.trackPageView) {
+        trackPageView(pageTitle);
+    }
+    
     // Check if we're on the home page by looking at the current path
     const currentPath = window.location.pathname;
     const isHomePage = currentPath.endsWith('index.html') && !currentPath.includes('html-files');
 
     // Only show home button if not on home page
     const homeButton = isHomePage ? '' : `
-        <button onclick="window.location.href='../../index.html'" class="btn btn-primary btn-sm hover:scale-105 transition-all duration-200">
+        <button onclick="if(window.trackButtonClick) trackButtonClick('home_button', '${pageTitle}'); window.location.href='../../index.html'" class="btn btn-primary btn-sm hover:scale-105 transition-all duration-200">
             🏠 Home
         </button>
     `;
